@@ -1,0 +1,32 @@
+# Ignore o diretório bin e obj
+bin/
+obj/
+
+# Ignore arquivos de configuração específicos do Visual Studio
+.vs/
+.vscode/
+.idea/
+
+# Arquivos de log
+*.log
+
+# Arquivos de configuração do sistema operacional
+Thumbs.db
+Desktop.ini
+
+# Ignorar arquivos de banco de dados locais
+appsettings.Development.json
+
+# Ignorar arquivos do Rider
+.idea/
+
+# Ignorar arquivos do ASP.NET Core
+project.lock.json
+project.fragment.lock.json
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+# Arquivos de pacotes gerenciados
+.npm/
