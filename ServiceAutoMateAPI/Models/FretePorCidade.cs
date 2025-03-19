@@ -1,0 +1,8 @@
+namespace ServiceAutoMateAPI.Models
+{
+    public class FretePorCidade
+    {
+        public required string Cidade { get; set; }
+        public required decimal Valor { get; set; }
+    }
+}
