@@ -19,11 +19,11 @@ Sistema de Automatização de Processo de Preenchimento de Solicitação de Serv
     https://www.mongodb.com/try/download/community
 
     Escolha a versão mais recente para Windows.
-    Durante a instalação escolha estas opções:
+    Durante a instalação:
     - "Install MongoDB as a Service" (Recomendado)
     - Service Name: defina-o como ServiceAutoMate
-    - Start MongoDB as Network Service User (deixe selecioando)
-    - Install MongoDB Compass (seleciona isntalar junto)
+    - Start MongoDB as Network Service User (deixe selecionado)
+    - Install MongoDB Compass (seleciona instalar junto)
 
     Finalize a instalação.
 
