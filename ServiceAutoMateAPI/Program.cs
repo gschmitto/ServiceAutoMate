@@ -13,6 +13,8 @@ using ServiceAutoMateAPI.Commands.SolicitacoesServico;
 using ServiceAutoMateAPI.Commands.SolicitacoesServico.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseWindowsService();
+builder.WebHost.UseUrls(builder.Configuration["Urls"]!);
 
 // Configuração do MongoDB
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDB"));
