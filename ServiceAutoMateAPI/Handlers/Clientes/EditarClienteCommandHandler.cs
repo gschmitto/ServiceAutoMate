@@ -31,6 +31,7 @@ namespace ServiceAutoMateAPI.Handlers.Clientes
             clienteExistente.ValorFretePorCidade = request.ValorFretePorCidade;
             clienteExistente.ValorMaximoNota = request.ValorMaximoNota;
             clienteExistente.PorcentagemCobranca = request.PorcentagemCobranca;
+            clienteExistente.DataEdicao = DateTime.UtcNow;
 
             var clienteDuplicado = await _clienteRepository.GetByDetailsAsync(
                 request.NomeEmpresa,

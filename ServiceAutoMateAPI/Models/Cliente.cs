@@ -9,6 +9,8 @@ namespace ServiceAutoMateAPI.Models
         public List<FretePorCidade>? ValorFretePorCidade { get; set; }
         public decimal ValorMaximoNota { get; set; }
         public decimal PorcentagemCobranca { get; set; }
+        public DateTime DataCriacao { get; set; }
+        public DateTime? DataEdicao { get; set; }
 
         public decimal GetValorFretePorCidade(string cidadeDestinatario, decimal totalNotas)
         {

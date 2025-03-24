@@ -30,7 +30,8 @@ namespace ServiceAutoMateAPI.Handlers.Clientes
                 Cidade = request.Cidade,
                 ValorFretePorCidade = request.ValorFretePorCidade,
                 ValorMaximoNota = request.ValorMaximoNota,
-                PorcentagemCobranca = request.PorcentagemCobranca
+                PorcentagemCobranca = request.PorcentagemCobranca,
+                DataCriacao = DateTime.UtcNow
             };
 
             var clienteDuplicado = await _clienteRepository.GetByDetailsAsync(

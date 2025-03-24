@@ -25,6 +25,12 @@ export const Subtitle = styled.p`
   opacity: 0.8;
 `;
 
+export const ButtonContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+`;
+
 export const ActionButton = styled.button`
   margin-top: 20px;
   padding: 12px 24px;

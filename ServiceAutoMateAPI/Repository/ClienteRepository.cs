@@ -15,11 +15,36 @@ namespace ServiceAutoMateAPI.Repository
 
         public async Task<IEnumerable<Cliente>> GetPaginationAsync(int page, int pageSize)
         {
-            return await _clientesCollection
-                .Find(FilterDefinition<Cliente>.Empty)
+            var clientes = await _clientesCollection
+                .Aggregate()
+                .Project(cliente => new
+                {
+                    cliente.Id,
+                    cliente.NomeEmpresa,
+                    cliente.Endereco,
+                    cliente.Cidade,
+                    cliente.ValorMaximoNota,
+                    cliente.PorcentagemCobranca,
+                    cliente.DataCriacao,
+                    cliente.DataEdicao,
+                    DataOrdenada = cliente.DataEdicao ?? cliente.DataCriacao
+                })
+                .SortByDescending(cliente => cliente.DataOrdenada)
                 .Skip((page - 1) * pageSize)
                 .Limit(pageSize)
                 .ToListAsync();
+
+            return clientes.Select(cliente => new Cliente
+            {
+                Id = cliente.Id,
+                NomeEmpresa = cliente.NomeEmpresa,
+                Endereco = cliente.Endereco,
+                Cidade = cliente.Cidade,
+                ValorMaximoNota = cliente.ValorMaximoNota,
+                PorcentagemCobranca = cliente.PorcentagemCobranca,
+                DataCriacao = cliente.DataCriacao,
+                DataEdicao = cliente.DataEdicao
+            });
         }
 
         public async Task<long> GetTotalAsync()
@@ -52,7 +77,8 @@ namespace ServiceAutoMateAPI.Repository
                 .Set(c => c.Cidade, cliente.Cidade)
                 .Set(c => c.ValorFretePorCidade, cliente.ValorFretePorCidade)
                 .Set(c => c.ValorMaximoNota, cliente.ValorMaximoNota)
-                .Set(c => c.PorcentagemCobranca, cliente.PorcentagemCobranca);
+                .Set(c => c.PorcentagemCobranca, cliente.PorcentagemCobranca)
+                .Set(c => c.DataEdicao, cliente.DataEdicao);
 
             await _clientesCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         }
