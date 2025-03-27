@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, Fragment } from "react";
-import { AcaoAddContainer, Button, Container } from "./styled";
+import { AcaoAddContainer, Button, Container } from "../../shared/styled";
 import { Cliente } from "../../models/Cliente";
 import { ClienteService } from "../../services/ClienteService";
 import Pagination from "../../components/Pagination";
@@ -41,6 +41,10 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
         ...form,
         valorMaximoNota: Number(form.valorMaximoNota) || 0,
         porcentagemCobranca: Number(form.porcentagemCobranca) || 0,
+        valorFretePorCidade: form.valorFretePorCidade?.map((frete) => ({
+          cidade: frete.cidade,
+          valor: Number(frete.valor) || 0,
+        })),
       });
       fetchClientes();
       setPopup(false);
@@ -52,8 +56,8 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
 
   return (
     <Container>
-      <h2>{title}</h2>
       <AcaoAddContainer>
+        <h2>{title}</h2>
         <Button onClick={() => setPopup(true)}>
           + Novo Cliente
         </Button>

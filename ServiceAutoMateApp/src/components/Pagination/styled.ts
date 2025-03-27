@@ -4,7 +4,7 @@ export const PaginationContainer = styled.div`
   display: flex;
   justify-content: end;
   align-items: center;
-  gap: 10px;  // Espaçamento entre os ícones e a informação da página
+  gap: 10px;
   padding: 10px;
   background-color: #f7f7f7;
   border-radius: 8px;
@@ -17,18 +17,18 @@ export const Button = styled.button`
   cursor: pointer;
   padding: 8px;
   transition: all 0.3s ease;
-  color: #007bff;
+  color: ${({ theme }) => theme.colors.primary};
   &:disabled {
     color: #aaa;
     cursor: not-allowed;
   }
   &:hover {
-    color: #0056b3;
+    color: ${({ theme }) => theme.colors.secondary};
   }
 `;
 
 export const PageInfo = styled.span`
   font-size: 16px;
   font-weight: bold;
-  color: #333;
+  color: ${({ theme }) => theme.colors.black};
 `;

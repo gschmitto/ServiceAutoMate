@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using ServiceAutoMateAPI.Models;
 
@@ -13,10 +14,21 @@ namespace ServiceAutoMateAPI.Repository
             return cliente;
         }
 
-        public async Task<IEnumerable<Cliente>> GetPaginationAsync(int page, int pageSize)
+        public async Task<IEnumerable<Cliente>> GetPaginationAsync(int page, int pageSize, string? nome = null)
         {
+            var filterBuilder = Builders<Cliente>.Filter;
+            var filters = new List<FilterDefinition<Cliente>>();
+
+            if (!string.IsNullOrEmpty(nome))
+            {
+                filters.Add(filterBuilder.Regex(s => s.NomeEmpresa, new BsonRegularExpression(nome, "i")));
+            }
+
+            var filter = filters.Count > 0 ? filterBuilder.And(filters) : FilterDefinition<Cliente>.Empty;
+
             var clientes = await _clientesCollection
                 .Aggregate()
+                .Match(filter)
                 .Project(cliente => new
                 {
                     cliente.Id,
@@ -27,6 +39,7 @@ namespace ServiceAutoMateAPI.Repository
                     cliente.PorcentagemCobranca,
                     cliente.DataCriacao,
                     cliente.DataEdicao,
+                    cliente.ValorFretePorCidade,
                     DataOrdenada = cliente.DataEdicao ?? cliente.DataCriacao
                 })
                 .SortByDescending(cliente => cliente.DataOrdenada)
@@ -42,8 +55,9 @@ namespace ServiceAutoMateAPI.Repository
                 Cidade = cliente.Cidade,
                 ValorMaximoNota = cliente.ValorMaximoNota,
                 PorcentagemCobranca = cliente.PorcentagemCobranca,
+                ValorFretePorCidade = cliente.ValorFretePorCidade,
                 DataCriacao = cliente.DataCriacao,
-                DataEdicao = cliente.DataEdicao
+                DataEdicao = cliente.DataEdicao,
             });
         }
 

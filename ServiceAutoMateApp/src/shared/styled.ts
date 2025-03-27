@@ -1,0 +1,143 @@
+import styled, { keyframes } from "styled-components";
+
+const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`;
+
+const slideUp = keyframes`
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`;
+
+export const Popup = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: ${fadeIn} 0.3s ease;
+`;
+
+export const PopupContent = styled.div`
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 450px;
+  max-width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: ${slideUp} 0.3s ease-out;
+`;
+
+export const Container = styled.div`
+  padding: 30px;
+  background-color: ${({ theme }) => theme.colors.background};
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  color: ${({ theme }) => theme.colors.black};
+`;
+
+export const Button = styled.button`
+  padding: 10px 20px;
+  border: none;
+  background-color: ${({ theme }) => theme.colors.secondary};
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary};
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+`;
+
+export const DeleteButton = styled(Button)`
+  background-color: ${({ theme }) => theme.colors.delete};
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.deleteSeconday};
+  }
+`;
+
+export const AcaoAddContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:focus {
+    border-color: ${({ theme }) => theme.colors.secondary};
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+  }
+
+  &:hover {
+    border-color: #0056b3;
+  }
+`;
+
+export const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 30px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+export const Th = styled.th`
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: white;
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+`;
+
+export const Td = styled.td`
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+  color: #555;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+`;
+
+export const AcaoConteiner = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+`;

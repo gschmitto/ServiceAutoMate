@@ -1,3 +1,5 @@
+import { FretePorCidade } from "./FretePorCidade";
+
 export interface Cliente {
   id: string;
   nomeEmpresa: string;
@@ -5,4 +7,5 @@ export interface Cliente {
   cidade: string;
   valorMaximoNota: number;
   porcentagemCobranca: number;
+  valorFretePorCidade?: FretePorCidade[] | null;
 }

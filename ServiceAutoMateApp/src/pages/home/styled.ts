@@ -4,10 +4,11 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+  height: calc(100vh - 69.11px);
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.secondary});
   color: white;
   text-align: center;
+  overflow: hidden;
 `;
 
 export const Content = styled.div`
@@ -29,6 +30,7 @@ export const ButtonContainer = styled.div`
   display: flex;
   gap: 20px;
   margin-top: 20px;
+  justify-content: space-around;
 `;
 
 export const ActionButton = styled.button`
@@ -37,13 +39,13 @@ export const ActionButton = styled.button`
   font-size: 1rem;
   font-weight: bold;
   color: white;
-  background: #e67e22;
+  background: ${({ theme }) => theme.colors.primary};
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s;
 
   &:hover {
-    background: #d35400;
+    background: ${({ theme }) => theme.colors.secondary};;
   }
 `;

@@ -23,7 +23,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         <FiChevronLeft size={24} />
       </Button>
       <PageInfo>
-        Página {currentPage} de {totalPages}
+        Página {currentPage} de {totalPages || 1}
       </PageInfo>
       <Button onClick={handleNext} disabled={currentPage === totalPages}>
         <FiChevronRight size={24} />

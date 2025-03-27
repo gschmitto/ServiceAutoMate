@@ -10,5 +10,6 @@ namespace ServiceAutoMateAPI.Models
         public decimal ValorFrete { get; set; }
         public List<DadosNotaFiscal> NotasFiscais { get; set; } = [];
         public DateTime DataCriacao { get; set; }
+        public DateTime? DataEdicao { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace ServiceAutoMateAPI.Handlers.Clientes
         {
             var totalCount = await _clienteRepository.GetTotalAsync();
 
-            var clientes = await _clienteRepository.GetPaginationAsync(request.Page, request.PageSize);
+            var clientes = await _clienteRepository.GetPaginationAsync(request.Page, request.PageSize, request.Nome);
 
             return new PagedResult<Cliente>(clientes, totalCount, request.Page, request.PageSize);
         }

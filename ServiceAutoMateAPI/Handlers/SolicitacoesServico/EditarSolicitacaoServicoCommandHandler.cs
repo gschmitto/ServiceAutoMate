@@ -31,6 +31,7 @@ namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
             solicitacaoExistente.Destinatario = request.Destinatario;
             solicitacaoExistente.CidadeDestinatario = request.CidadeDestinatario;
             solicitacaoExistente.NotasFiscais = request.NotasFiscais;
+            solicitacaoExistente.DataEdicao = DateTime.UtcNow;
 
             var cliente = await _clienteRepository.GetByIdAsync(request.ClienteId)
                 ?? throw new KeyNotFoundException("Cliente não encontrado.");

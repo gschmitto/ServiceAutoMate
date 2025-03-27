@@ -35,12 +35,39 @@ namespace ServiceAutoMateAPI.Repository
 
             var filter = filters.Count > 0 ? filterBuilder.And(filters) : FilterDefinition<SolicitacaoServico>.Empty;
 
-            return await _solicitacoesCollection
-                .Find(filter)
-                .SortByDescending(s => s.DataCriacao)
+            var solicitacoes = await _solicitacoesCollection
+                .Aggregate()
+                .Match(filter)
+                .Project(solicitacao => new
+                {
+                    solicitacao.Id,
+                    solicitacao.ClienteId,
+                    solicitacao.Destinatario,
+                    solicitacao.CidadeDestinatario,
+                    solicitacao.QuantidadeVolumes,
+                    solicitacao.ValorFrete,
+                    solicitacao.NotasFiscais,
+                    solicitacao.DataCriacao,
+                    solicitacao.DataEdicao,
+                    DataOrdenada = solicitacao.DataEdicao ?? solicitacao.DataCriacao
+                })
+                .SortByDescending(solicitacao => solicitacao.DataOrdenada)
                 .Skip((page - 1) * pageSize)
                 .Limit(pageSize)
                 .ToListAsync();
+
+            return solicitacoes.Select(solicitacao => new SolicitacaoServico
+            {
+                Id = solicitacao.Id,
+                ClienteId = solicitacao.ClienteId,
+                Destinatario = solicitacao.Destinatario,
+                CidadeDestinatario = solicitacao.CidadeDestinatario,
+                QuantidadeVolumes = solicitacao.QuantidadeVolumes,
+                ValorFrete = solicitacao.ValorFrete,
+                NotasFiscais = solicitacao.NotasFiscais,
+                DataCriacao = solicitacao.DataCriacao,
+                DataEdicao = solicitacao.DataEdicao,
+            });
         }
 
         public async Task<long> GetTotalAsync()

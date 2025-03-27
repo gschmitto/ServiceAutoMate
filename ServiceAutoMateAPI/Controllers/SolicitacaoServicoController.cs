@@ -4,6 +4,7 @@ using ServiceAutoMateAPI.Commands.SolicitacoesServico;
 using ServiceAutoMateAPI.DTOs;
 using ServiceAutoMateAPI.Models;
 using ServiceAutoMateAPI.Queries;
+using ServiceAutoMateAPI.Responses;
 using ServiceAutoMateAPI.Responses.Errors;
 
 namespace ServiceAutoMateAPI.Controllers
@@ -26,7 +27,7 @@ namespace ServiceAutoMateAPI.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(PagedResult<SolicitacaoServico>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<SolicitacaoServicoResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterSolicitacoes(
             [FromQuery] string? clienteId,

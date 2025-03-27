@@ -34,15 +34,19 @@ namespace ServiceAutoMateAPI.Controllers
         /// <summary>
         /// Obtém todos os clientes com paginação.
         /// </summary>
+        /// <param name="nome">Nome do cliente.</param>
         /// <param name="page">Número da página.</param>
         /// <param name="pageSize">Número de itens por página.</param>
         /// <returns>Lista de clientes paginada.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(PagedResult<Cliente>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ObterClientes([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> ObterClientes(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? nome = null)
         {
-            var query = new ObterTodosClientesQuery(page, pageSize);
+            var query = new ObterTodosClientesQuery(page, pageSize, nome);
             var clientesPaginados = await _mediator.Send(query);
             return Ok(clientesPaginados);
         }
