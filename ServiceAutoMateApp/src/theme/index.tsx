@@ -5,9 +5,11 @@ export const theme = {
     background: "#f5f7fa",
     text: "#ffffff",
     gray: "ccc",
-    black: "333",
+    black: "#1b1b1b",
     delete: "#e80101",
     deleteSeconday: "#970000",
+    save: "#10891e",
+    saveSecondary: "#0b5e15",
   },
   fonts: {
     primary: "'Poppins', sans-serif",

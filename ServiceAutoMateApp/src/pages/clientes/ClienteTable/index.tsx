@@ -25,10 +25,11 @@ const ClienteTable: React.FC<ClienteTableProps> = ({ clientes, fetchClientes }) 
   };
 
   const handleSave = async (form: Cliente) => {
+    console.log(form);
     try {
       await ClienteService.saveCliente({
         ...form,
-        valorMaximoNota: Number(form.valorMaximoNota) || 0,
+        valorMaximoNota: form.valorMaximoNota || 0,
         porcentagemCobranca: Number(form.porcentagemCobranca) || 0,
         valorFretePorCidade: form.valorFretePorCidade?.map((frete) => ({
           cidade: frete.cidade,

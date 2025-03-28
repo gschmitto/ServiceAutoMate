@@ -35,12 +35,13 @@ export const Popup = styled.div`
 
 export const PopupContent = styled.div`
   background: white;
-  padding: 30px;
+  padding: 15px 30px 30px;
   border-radius: 10px;
   width: 450px;
   max-width: 90%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: ${slideUp} 0.3s ease-out;
+  color: ${({ theme }) => theme.colors.black};
 `;
 
 export const Container = styled.div`
@@ -80,6 +81,13 @@ export const DeleteButton = styled(Button)`
   }
 `;
 
+export const SaveButton = styled(Button)`
+  background-color: ${({ theme }) => theme.colors.save};
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.saveSecondary};
+  }
+`;
+
 export const AcaoAddContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -88,7 +96,7 @@ export const AcaoAddContainer = styled.div`
 export const Input = styled.input`
   width: 100%;
   padding: 10px;
-  margin: 8px 0;
+  margin: 4px 0 8px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
@@ -103,6 +111,52 @@ export const Input = styled.input`
   &:hover {
     border-color: #0056b3;
   }
+`;
+
+export const Label = styled.label`
+  font-weight: bold;
+  font-size: 12px;
+  padding-left: 2px;
+`;
+
+export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const PrefixSymbol = styled.span`
+  margin-left: 4px;
+  margin-right: 4px;
+`;
+
+export const SufixSymbol = styled.span`
+  margin-left: 4px;
+`;
+
+export const FlexWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+interface FlexContainerProps {
+  marginRight?: number;
+  display?: string;
+  column?: boolean;
+}
+
+export const FlexContainer = styled.div<FlexContainerProps>`
+  display: flex;
+  align-items: center;
+  margin-right: ${props => props.marginRight}px;
+  display: ${props => props.display};
+  flex-direction: ${props => (props.column ? "column" : "row")};
+  align-items: baseline;
 `;
 
 export const Table = styled.table`

@@ -6,7 +6,7 @@ export const MenuContainer = styled.nav`
   align-items: center;
   justify-content: space-between;
   background-color: ${({ theme }) => theme.colors.secondary};
-  padding: 12px 24px;
+  padding: 12px 30px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
