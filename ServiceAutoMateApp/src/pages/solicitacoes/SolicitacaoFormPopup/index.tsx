@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Popup, PopupContent, Button, Input, AcaoConteiner, DeleteButton } from "../../../shared/styled";
+import { Popup, PopupContent, Button, Input, AcaoConteiner, DeleteButton, InputContainer, Label, FlexWrapper, FlexContainer, PrefixSymbol, SaveButton } from "../../../shared/styled";
 import { DadosNotaFiscal } from "../../../models/DadosNotaFiscal";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { ContainerNotasAdd, NotasContainer, NotasListContainer } from "./styled";
 import { SolicitacaoServico } from "../../../models/SolicitacaoServico";
 import { Cliente } from "../../../models/Cliente";
 import { ClienteService } from "../../../services/ClienteService";
-import Select from "react-select/base";
 import { toast } from "react-toastify";
+import { FiX } from "react-icons/fi";
+import AsyncSelect from "react-select/async";
 
 interface SolicitacaoFormPopupProps {
   solicitacao?: SolicitacaoServico;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (solicitacao: SolicitacaoServico, form: FormState) => void;
+  onSave: (solicitacao: SolicitacaoServico, form: FormState, callback: (resultado: any) => void) => void;
 }
 
 type FormState = {
@@ -39,10 +40,9 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
     dataCriacao: "",
   });
 
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<{ value: string; label: string; } | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isFreteCalculado, setIsFreteCalculado] = useState(false);
 
   useEffect(() => {
     if (solicitacao) {
@@ -66,34 +66,38 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
     }
   }, [solicitacao]);
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
-      if (searchTerm.length >= 3) {
-        setIsLoading(true);
-        try {
-          const data = await ClienteService.getClientes(1, 10, searchTerm);
-          setClientes(data.items || []);
-        } catch (error: any) {
-          toast.error(error.message);
-        }
-        setIsLoading(false);
-      } else {
-        setClientes([]);
-      }
-    }, 500); // 500ms de debounce
+  const loadOptions = async (inputValue: string) => {
+    if (inputValue.length < 3) {
+      return [];
+    }
   
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+    try {
+      const data = await ClienteService.getClientes(1, 10, inputValue);
+      return data.items.map((cliente: Cliente) => ({
+        value: cliente.id,
+        label: cliente.nomeEmpresa,
+      }));
+    } catch (error: any) {
+      toast.error(error.message);
+      return [];
+    }
+  };
 
   const handleSave = () => {
-    const clienteId = form.clienteId ?? '';
+    const clienteId = selectedCliente?.value ?? '';
     onSave({
       ...form,
       notasFiscais: form.notasFiscais ?? [],
       quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
       valorFrete: Number(form.valorFrete) || 0,
       clienteId,
-    }, form);
+    }, form, (resultado) => {
+      setForm((prevForm) => ({
+        ...prevForm,
+        valorFrete: resultado.valorFrete,
+      }));
+    });
+    setIsFreteCalculado(true);
   };
 
   const handleAddNotaFiscal = () => {
@@ -124,76 +128,66 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
   return (
     <Popup>
       <PopupContent>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <FiX size={24} onClick={onClose} style={{ cursor: "pointer" }} />
+        </div>
         <h3>{form.id ? "Editar Solicitação" : "Nova Solicitação"}</h3>
-        <Select
-          inputValue={clientes.find((c) => c.id === form.clienteId)?.nomeEmpresa ?? ''}
-          menuIsOpen={menuOpen}
-          onMenuOpen={() => setMenuOpen(true)}
-          onMenuClose={() => setMenuOpen(false)}
-          placeholder="Buscar Cliente..."
-          isLoading={isLoading}
-          onInputChange={(value, { action }) => {
-            if (action === "input-change") {
-              setSearchTerm(value);
-            }
-          }}        
-          options={clientes.map((cliente) => ({
-            value: cliente.id,
-            label: cliente.nomeEmpresa,
-          }))}
-          onChange={(selectedOption) => {
-            if (selectedOption) {
-              setForm((prevForm) => ({
-                ...prevForm,
-                clienteId: selectedOption.value,
-              }));
-            } else {
-              setForm((prevForm) => ({
-                ...prevForm,
-                clienteId: null,
-              }));
-            }
-          }}
-          value={clientes.find((c) => c.id === form.clienteId) ? { 
-            value: form.clienteId, 
-            label: clientes.find((c) => c.id === form.clienteId)?.nomeEmpresa ?? '' 
-          } : null}
-          noOptionsMessage={() => searchTerm.length < 3 ? "Digite pelo menos 3 letras..." : "Nenhum cliente encontrado"}
+        <Label htmlFor="idCliente">Cliente: <span style={{ color: "red" }}>*</span></Label>
+        <AsyncSelect
           isClearable
+          cacheOptions
+          defaultOptions
+          loadOptions={loadOptions}
+          placeholder="Buscar Cliente..."
+          value={selectedCliente}
+          onChange={(selectedOption) => {
+            setSelectedCliente(selectedOption);
+          }}
+          onInputChange={(inputValue) => {
+            setSearchTerm(inputValue);
+          }}
+          loadingMessage={() => 'Carregando...'}
+          noOptionsMessage={() => searchTerm.length < 3 ? "Digite pelo menos 3 letras..." : "Nenhum cliente encontrado"}
+          styles={{
+            control: (base) => ({
+              ...base,
+              marginBottom: 8,
+              marginTop: 4,
+              lineHeight: 1.75,
+              '&:focus': {
+                borderColor: '#4f85cb',
+                boxShadow: '0 0 5px rgba(0, 123, 255, 0.5)',
+                outline: 'none',
+              },
+              '&:hover': {
+                borderColor: '#0056b3',
+              },
+            }),
+          }}
         />
-        <Input
-          type="text"
-          placeholder="Destinatário"
-          value={form.destinatario}
-          onChange={(e) => setForm({ ...form, destinatario: e.target.value })}
-        />
-        <br />
-        <Input
-          type="text"
-          placeholder="Cidade Destinatário"
-          value={form.cidadeDestinatario}
-          onChange={(e) => setForm({ ...form, cidadeDestinatario: e.target.value })}
-        />
-        <br />
-        <Input
-          type="number"
-          placeholder="Quantidade de Volumes"
-          value={form.quantidadeVolumes}
-          onChange={(e) => setForm({ ...form, quantidadeVolumes: e.target.value })}
-        />
-        <br />
-        <Input
-          type="number"
-          placeholder="Valor Frete"
-          value={form.valorFrete}
-          onChange={(e) => setForm({ ...form, valorFrete: e.target.value })}
-        />
-        <br />
+        <InputContainer>
+          <Label htmlFor="destinatario">Nome destinatário: <span style={{ color: "red" }}>*</span></Label>
+          <Input
+            type="text"
+            placeholder="Destinatário"
+            value={form.destinatario}
+            onChange={(e) => setForm({ ...form, destinatario: e.target.value })}
+          />
+        </InputContainer>
+        <InputContainer>
+          <Label htmlFor="cidadeDestinatario">Cidade destinatário: <span style={{ color: "red" }}>*</span></Label>
+          <Input
+            type="text"
+            placeholder="Cidade Destinatário"
+            value={form.cidadeDestinatario}
+            onChange={(e) => setForm({ ...form, cidadeDestinatario: e.target.value })}
+          />
+        </InputContainer>
         <ContainerNotasAdd>
           <h4>Notas Fiscais</h4>
-          <Button onClick={handleAddNotaFiscal}>
+          {!isFreteCalculado && <Button onClick={handleAddNotaFiscal}>
             <FaPlus />
-          </Button>
+          </Button>}
         </ContainerNotasAdd>
 
         {(form.notasFiscais && form.notasFiscais.length > 0) && (
@@ -201,29 +195,77 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
             {form.notasFiscais.map((nota, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <NotasContainer key={index}>
-                <Input
-                  type="text"
-                  placeholder="Número da Nota"
-                  value={nota.numeroNota}
-                  onChange={(e) => handleNotaFiscalChange(index, "numeroNota", e.target.value)}
-                />
-                <Input
-                  type="text"
-                  placeholder="Valor da Nota"
-                  value={nota.valorNota}
-                  onChange={(e) => handleNotaFiscalChange(index, "valorNota", e.target.value)}
-                />
-                <DeleteButton onClick={() => handleRemoveNotaFiscal(index)} style={{ margin: 8, marginInline: 0 }}>
-                  <FaTrash />
-                </DeleteButton>
+                <FlexContainer display="flex" column>
+                  <Label htmlFor="numeroNota">Número da nota: <span style={{ color: "red" }}>*</span></Label>
+                  <Input
+                    type="text"
+                    placeholder="12345678"
+                    value={nota.numeroNota}
+                    onChange={(e) => handleNotaFiscalChange(index, "numeroNota", e.target.value)}
+                  />
+                </FlexContainer>
+                <FlexContainer display="flex" column>
+                  <Label htmlFor="valorNota">Valor da nota: <span style={{ color: "red" }}>*</span></Label>
+                  <FlexContainer>
+                    <PrefixSymbol>R$</PrefixSymbol>
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="1000,00"
+                      value={nota.valorNota}
+                      onChange={(e) => handleNotaFiscalChange(index, "valorNota", e.target.value)}
+                    />
+                  </FlexContainer>
+                </FlexContainer>
+                {!isFreteCalculado && (
+                  <DeleteButton
+                    onClick={() => handleRemoveNotaFiscal(index)}
+                    style={{width: 32, height: 32, alignSelf: "center", padding: 8, marginTop: 9}}
+                  >
+                    <FaTrash />
+                  </DeleteButton>
+                )}
               </NotasContainer>
             ))}
           </NotasListContainer>
         )}
+        <FlexWrapper>
+          <FlexContainer marginRight={16} display="flex" column>
+            <Label htmlFor="quantidadeVolumes">Quantidade de volumes: <span style={{ color: "red" }}>*</span></Label>
+            <Input
+              type="number"
+              inputMode="numeric"
+              placeholder="1"
+              value={form.quantidadeVolumes}
+              onChange={(e) => setForm({ ...form, quantidadeVolumes: e.target.value })}
+            />
+          </FlexContainer>
+          {isFreteCalculado && (
+            <FlexContainer display="flex" column>
+              <Label htmlFor="valorFrete">Valor frete:</Label>
+              <FlexContainer>
+                <PrefixSymbol>R$</PrefixSymbol>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="Clique p/ calcular"
+                  value={form.valorFrete}
+                  disabled
+                />
+              </FlexContainer>
+            </FlexContainer>
+          )}
+        </FlexWrapper>
 
         <AcaoConteiner>
-          <Button onClick={handleSave}>Salvar</Button>
-          <Button onClick={onClose}>Cancelar</Button>
+          {isFreteCalculado ? (
+            <SaveButton onClick={onClose}>Concluir</SaveButton>
+          ): (
+            <>
+              <SaveButton onClick={handleSave}>Calcular frete</SaveButton>
+              <DeleteButton onClick={onClose}>Cancelar</DeleteButton>
+            </>
+          )}
         </AcaoConteiner>
       </PopupContent>
     </Popup>

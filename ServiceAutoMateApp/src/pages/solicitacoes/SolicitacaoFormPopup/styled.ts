@@ -12,7 +12,7 @@ export const NotasListContainer = styled.div`
   overflow-y: auto;
   border: 1px solid ${({ theme }) => theme.colors.gray};
   border-radius: 5px;
-  padding: 10px;
+  padding-right: 10px;
   margin-bottom: 10px;
 `;
 

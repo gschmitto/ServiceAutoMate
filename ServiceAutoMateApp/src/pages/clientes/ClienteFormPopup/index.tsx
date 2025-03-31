@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Popup, PopupContent, Button, Input, DeleteButton, AcaoConteiner, InputContainer, Label, FlexWrapper, SufixSymbol, PrefixSymbol, FlexContainer, SaveButton } from "../../../shared/styled";
+import { Popup, PopupContent, Button, Input, DeleteButton, AcaoConteiner, InputContainer, Label, FlexWrapper, SufixSymbol, PrefixSymbol, FlexContainer, SaveButton, ErrorMessage } from "../../../shared/styled";
 import { Cliente } from "../../../models/Cliente";
 import { FretePorCidade } from "../../../models/FretePorCidade";
 import { FaPlus, FaTrash } from "react-icons/fa";
@@ -34,6 +34,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
     porcentagemCobranca: "",
     valorFretePorCidade: null
   });
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     if (cliente) {
@@ -56,8 +57,67 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
     }
   }, [cliente]);
 
+  interface FormErrors {
+    [key: string]: string;
+  }
+  
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+  
+    if (!form.nomeEmpresa) {
+      newErrors.nomeEmpresa = 'Nome do cliente é obrigatório.';
+    } else if (form.nomeEmpresa.length < 3) {
+      newErrors.nomeEmpresa = 'Nome do cliente deve ter pelo menos 3 caracteres.';
+    }
+  
+    if (!form.endereco) {
+      newErrors.endereco = 'Endereço do cliente é obrigatório.';
+    } else if (form.endereco.length < 3) {
+      newErrors.endereco = 'Endereço do cliente deve ter pelo menos 3 caracteres.';
+    }
+  
+    if (!form.cidade) {
+      newErrors.cidade = 'Cidade do cliente é obrigatória.';
+    } else if (form.cidade.length < 3) {
+      newErrors.cidade = 'Cidade do cliente deve ter pelo menos 3 caracteres.';
+    }
+  
+    if (!form.valorMaximoNota) {
+      newErrors.valorMaximoNota = 'Valor máximo nota é obrigatório.';
+    } else if (stringToFloat(form.valorMaximoNota) <= 0) {
+      newErrors.valorMaximoNota = 'Valor máximo nota deve ser maior que zero.';
+    }
+  
+    if (!form.porcentagemCobranca) {
+      newErrors.porcentagemCobranca = 'Valor porcentagem da cobrança é obrigatório.';
+    } else if (stringToFloat(form.porcentagemCobranca) <= 0) {
+      newErrors.porcentagemCobranca = 'Valor porcentagem da cobrança deve ser maior que zero.';
+    }
+  
+    if (form.valorFretePorCidade && form.valorFretePorCidade.length > 0) {
+      form.valorFretePorCidade.forEach((frete, index) => {
+        if (!frete.cidade) {
+          newErrors[`freteCidade_${index}`] = 'Nome da cidade é obrigatório.';
+        } else if (frete.cidade.length < 3) {
+          newErrors[`freteCidade_${index}`] = 'Nome da cidade deve ter pelo menos 3 caracteres.';
+        }
+  
+        if (!frete.valor) {
+          newErrors[`freteValor_${index}`] = 'Valor frete é obrigatório.';
+        } else if (stringToFloat(frete.valor.toString()) <= 0) {
+          newErrors[`freteValor_${index}`] = 'Valor frete deve ser maior que zero.';
+        }
+      });
+    }
+    setErrors(newErrors);
+    return newErrors;
+  };
+
   const handleSave = () => {
-    onSave({ ...form, valorMaximoNota: stringToFloat(form.valorMaximoNota) || 0, porcentagemCobranca: stringToFloat(form.porcentagemCobranca) || 0 }, form);
+    const errors = validateForm();  
+    if (Object.keys(errors).length <= 0) {
+      onSave({ ...form, valorMaximoNota: stringToFloat(form.valorMaximoNota) || 0, porcentagemCobranca: stringToFloat(form.porcentagemCobranca) || 0 }, form);
+    }
   };
 
   const handleAddFrete = () => {
@@ -93,38 +153,41 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
         </div>
         <h3>{form.id ? "Editar Cliente" : "Novo Cliente"}</h3>
         <InputContainer>
-          <Label htmlFor="nomeEmpresa">Nome empresa:</Label>
+          <Label htmlFor="nomeEmpresa">Nome do cliente: <span style={{ color: "red" }}>*</span></Label>
           <Input
             type="text"
-            placeholder="Nome Empresa"
+            placeholder="Nome da Empresa"
             value={form.nomeEmpresa}
             onChange={(e) => setForm({ ...form, nomeEmpresa: e.target.value })}
           />
+          {errors.nomeEmpresa && <ErrorMessage>{errors.nomeEmpresa}</ErrorMessage>}
         </InputContainer>
         
         <InputContainer>
-          <Label htmlFor="endereco">Endereço:</Label>
+          <Label htmlFor="endereco">Endereço do cliente: <span style={{ color: "red" }}>*</span></Label>
           <Input
             type="text"
             placeholder="Endereço"
             value={form.endereco}
             onChange={(e) => setForm({ ...form, endereco: e.target.value })}
           />
+          {errors.endereco && <ErrorMessage>{errors.endereco}</ErrorMessage>}
         </InputContainer>
         
         <InputContainer>
-          <Label htmlFor="cidade">Cidade:</Label>
+          <Label htmlFor="cidade">Cidade do cliente: <span style={{ color: "red" }}>*</span></Label>
           <Input
             type="text"
             placeholder="Cidade"
             value={form.cidade}
             onChange={(e) => setForm({ ...form, cidade: e.target.value })}
           />
+          {errors.cidade && <ErrorMessage>{errors.cidade}</ErrorMessage>}
         </InputContainer>
         
         <FlexWrapper>
           <FlexContainer marginRight={16} display="flex" column>
-            <Label htmlFor="valorMaximoNota">Valor máx. nota:</Label>
+            <Label htmlFor="valorMaximoNota">Valor máx. nota: <span style={{ color: "red" }}>*</span></Label>
             <FlexContainer>
               <PrefixSymbol>R$</PrefixSymbol>
               <Input
@@ -135,9 +198,10 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                 onChange={(e) => setForm({ ...form, valorMaximoNota: e.target.value })}
               />
             </FlexContainer>
+            {errors.valorMaximoNota && <ErrorMessage>{errors.valorMaximoNota}</ErrorMessage>}
           </FlexContainer>
           <FlexContainer marginRight={16} display="flex" column style={{maxWidth: 143}}>
-            <Label htmlFor="porcentagemCobranca">Porcentagem cobrança:</Label>
+            <Label htmlFor="porcentagemCobranca">% cobrança: <span style={{ color: "red" }}>*</span></Label>
             <FlexContainer>
               <Input
                 type="number"
@@ -148,6 +212,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
               />
               <SufixSymbol>%</SufixSymbol>
             </FlexContainer>
+            {errors.porcentagemCobranca && <ErrorMessage>{errors.porcentagemCobranca}</ErrorMessage>}
           </FlexContainer>
         </FlexWrapper>
         <ContainerFretesAdd>
@@ -162,16 +227,17 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
               // eslint-disable-next-line react/no-array-index-key
               <FreteContainer key={index}>
                 <FlexContainer display="flex" column>
-                  <Label htmlFor="cidade">Nome cidade:</Label>
+                  <Label htmlFor="cidade">Nome cidade: <span style={{ color: "red" }}>*</span></Label>
                     <Input
                       type="text"
                       placeholder="Cidade"
                       value={frete.cidade}
                       onChange={(e) => handleFreteChange(index, "cidade", e.target.value)}
                     />
+                    {errors[`freteCidade_${index}`] && <ErrorMessage>{errors[`freteCidade_${index}`]}</ErrorMessage>}
                 </FlexContainer>
                 <FlexContainer display="flex" column style={{maxWidth: 134}}>
-                  <Label htmlFor="valor">Valor frete p/ cidade:</Label>
+                  <Label htmlFor="valor">Valor frete p/ cidade: <span style={{ color: "red" }}>*</span></Label>
                   <FlexContainer>
                     <PrefixSymbol>R$</PrefixSymbol>
                     <Input
@@ -182,6 +248,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                       onChange={(e) => handleFreteChange(index, "valor", e.target.value)}
                     />
                   </FlexContainer>
+                  {errors[`freteValor_${index}`] && <ErrorMessage>{errors[`freteValor_${index}`]}</ErrorMessage>}
                 </FlexContainer>
                 <DeleteButton
                   onClick={() => handleRemoveFrete(index)}

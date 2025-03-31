@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SolicitacaoServico } from "../models/SolicitacaoServico";
+import { SolicitacaoServico, SolicitacoesServico } from "../models/SolicitacaoServico";
 
 const API_URL = "/api/solicitacaoServico";
 
@@ -14,7 +14,7 @@ interface PagedResult<T> {
 export const SolicitacaoService = {
   getSolicitacoes: async (page = 1, pageSize = 10, clienteId?: string, dataInicial?: Date, dataFinal?: Date) => {
     try {
-      const response = await axios.get<PagedResult<SolicitacaoServico>>(`${API_URL}`, {
+      const response = await axios.get<PagedResult<SolicitacoesServico>>(`${API_URL}`, {
         params: { page, pageSize, clienteId, dataInicial, dataFinal }
       });
       return response.data;
@@ -28,7 +28,8 @@ export const SolicitacaoService = {
       if (solicitacao.id && solicitacao.id !== "0") {
         await axios.put(`${API_URL}/${solicitacao.id}`, solicitacao);
       } else {
-        await axios.post(API_URL, solicitacao);
+        const response = await axios.post(API_URL, solicitacao);
+        return response.data;
       }
     } catch (error: any) {
       throw new Error(error.response.data.detalhes || "Erro ao salvar solicitação de serviço.");

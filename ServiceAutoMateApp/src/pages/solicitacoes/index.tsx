@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, Fragment } from "react";
 import { AcaoAddContainer, Button, Container } from "../../shared/styled";
-import { SolicitacaoServico } from "../../models/SolicitacaoServico";
+import { SolicitacaoServico, SolicitacoesServico } from "../../models/SolicitacaoServico";
 import { SolicitacaoService } from "../../services/SolicitacaoService";
 import Pagination from "../../components/Pagination";
 import SolicitacaoTable from "./SolicitacaoTable";
@@ -13,7 +13,7 @@ interface SolicitacoesProps {
 }
 
 const Solicitacoes: React.FC<SolicitacoesProps> = ({ title }) => {
-  const [solicitacoes, setSolicitacoes] = useState<SolicitacaoServico[]>([]);
+  const [solicitacoes, setSolicitacoes] = useState<SolicitacoesServico[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ const Solicitacoes: React.FC<SolicitacoesProps> = ({ title }) => {
 
   const handleSave = async (form: SolicitacaoServico) => {
     try {
-      await SolicitacaoService.saveSolicitacao({
+      const resultado = await SolicitacaoService.saveSolicitacao({
         ...form,
         valorFrete: Number(form.valorFrete) || 0,
         quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
@@ -47,8 +47,8 @@ const Solicitacoes: React.FC<SolicitacoesProps> = ({ title }) => {
         }))
       });
       fetchSolicitacoes();
-      setPopup(false);
       toast.success("Solicitação de serviço adicionada com sucesso!");
+      return resultado;
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -73,7 +73,7 @@ const Solicitacoes: React.FC<SolicitacoesProps> = ({ title }) => {
           solicitacao={undefined}
           isOpen={popup}
           onClose={() => setPopup(false)}
-          onSave={handleSave}
+          onSave={(solicitacao, _, callback) => handleSave(solicitacao).then(callback)}
         />
       )}
     </Container>

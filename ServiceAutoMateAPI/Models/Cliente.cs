@@ -22,7 +22,7 @@ namespace ServiceAutoMateAPI.Models
 
             if (totalNotas >= ValorMaximoNota)
             {
-                valorFrete += valorFrete * (PorcentagemCobranca / 100);
+                valorFrete += totalNotas * (PorcentagemCobranca / 100);
             }
 
             return valorFrete;

@@ -111,6 +111,14 @@ export const Input = styled.input`
   &:hover {
     border-color: #0056b3;
   }
+`
+
+export const ErrorMessage = styled.div`
+  color: red;
+  font-size: 12px;
+  margin-bottom: 5px;
+  position: relative;
+  top: -5px;
 `;
 
 export const Label = styled.label`

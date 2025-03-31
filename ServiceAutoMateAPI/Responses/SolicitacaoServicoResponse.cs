@@ -6,5 +6,6 @@ namespace ServiceAutoMateAPI.Responses
     {
         public required SolicitacaoServico SolicitacaoServico { get; set; }
         public decimal TotalNotas { get; set; }
+        public required string NomeCliente { get; set; }
     }
 }

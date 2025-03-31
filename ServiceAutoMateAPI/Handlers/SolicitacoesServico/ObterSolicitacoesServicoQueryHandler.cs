@@ -6,10 +6,13 @@ using ServiceAutoMateAPI.Responses;
 
 namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
 {
-    public class ObterSolicitacoesServicoQueryHandler(ISolicitacaoServicoRepository solicitacaoServicoRepository)
+    public class ObterSolicitacoesServicoQueryHandler(
+        ISolicitacaoServicoRepository solicitacaoServicoRepository,
+        IClienteRepository clienteRepository)
         : IRequestHandler<ObterSolicitacoesServicoQuery, PagedResult<SolicitacaoServicoResponse>>
     {
         private readonly ISolicitacaoServicoRepository _solicitacaoServicoRepository = solicitacaoServicoRepository;
+        private readonly IClienteRepository _clienteRepository = clienteRepository;
 
         public async Task<PagedResult<SolicitacaoServicoResponse>> Handle(
             ObterSolicitacoesServicoQuery request,
@@ -24,11 +27,17 @@ namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
                 request.Page,
                 request.PageSize);
 
-            var solicitacoesServicoResponse = solicitacoesServico.Select(s => new SolicitacaoServicoResponse
+            var solicitacoesServicoResponse = new List<SolicitacaoServicoResponse>();
+            foreach (var s in solicitacoesServico)
             {
-                SolicitacaoServico = s,
-                TotalNotas = s.NotasFiscais.Sum(n => n.ValorNota)
-            }).ToList();
+                var cliente = await _clienteRepository.GetByIdAsync(s.ClienteId);
+                solicitacoesServicoResponse.Add(new SolicitacaoServicoResponse
+                {
+                    SolicitacaoServico = s,
+                    TotalNotas = s.NotasFiscais.Sum(n => n.ValorNota),
+                    NomeCliente = cliente?.NomeEmpresa ?? ""
+                });
+            }
 
             return new PagedResult<SolicitacaoServicoResponse>(
                 solicitacoesServicoResponse,

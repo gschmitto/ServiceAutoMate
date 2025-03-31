@@ -25,7 +25,6 @@ const ClienteTable: React.FC<ClienteTableProps> = ({ clientes, fetchClientes }) 
   };
 
   const handleSave = async (form: Cliente) => {
-    console.log(form);
     try {
       await ClienteService.saveCliente({
         ...form,
