@@ -109,6 +109,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
         }
       });
     }
+
     setErrors(newErrors);
     return newErrors;
   };
@@ -143,6 +144,20 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
     });
   };
 
+  const handleFreteInputChange = (index: number, field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFreteChange(index, field, e.target.value);
+    if (e.target.value !== '') {
+      setErrors((prevErrors: any) => ({ ...prevErrors, [`frete${field.charAt(0).toUpperCase() + field.slice(1)}_${index}`]: null }));
+    }
+  };
+
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [field]: e.target.value });
+    if (e.target.value !== '') {
+      setErrors((prevErrors: any) => ({ ...prevErrors, [field]: null }));
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -158,7 +173,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
             type="text"
             placeholder="Nome da Empresa"
             value={form.nomeEmpresa}
-            onChange={(e) => setForm({ ...form, nomeEmpresa: e.target.value })}
+            onChange={handleInputChange('nomeEmpresa')}
           />
           {errors.nomeEmpresa && <ErrorMessage>{errors.nomeEmpresa}</ErrorMessage>}
         </InputContainer>
@@ -169,7 +184,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
             type="text"
             placeholder="Endereço"
             value={form.endereco}
-            onChange={(e) => setForm({ ...form, endereco: e.target.value })}
+            onChange={handleInputChange('endereco')}
           />
           {errors.endereco && <ErrorMessage>{errors.endereco}</ErrorMessage>}
         </InputContainer>
@@ -180,7 +195,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
             type="text"
             placeholder="Cidade"
             value={form.cidade}
-            onChange={(e) => setForm({ ...form, cidade: e.target.value })}
+            onChange={handleInputChange('cidade')}
           />
           {errors.cidade && <ErrorMessage>{errors.cidade}</ErrorMessage>}
         </InputContainer>
@@ -195,7 +210,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                 inputMode="numeric"
                 placeholder="1000,00"
                 value={form.valorMaximoNota}
-                onChange={(e) => setForm({ ...form, valorMaximoNota: e.target.value })}
+                onChange={handleInputChange('valorMaximoNota')}
               />
             </FlexContainer>
             {errors.valorMaximoNota && <ErrorMessage>{errors.valorMaximoNota}</ErrorMessage>}
@@ -208,7 +223,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                 inputMode="numeric"
                 placeholder="5"
                 value={form.porcentagemCobranca}
-                onChange={(e: any) => setForm({ ...form, porcentagemCobranca: e.target.value })}
+                onChange={handleInputChange('porcentagemCobranca')}
               />
               <SufixSymbol>%</SufixSymbol>
             </FlexContainer>
@@ -232,7 +247,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                       type="text"
                       placeholder="Cidade"
                       value={frete.cidade}
-                      onChange={(e) => handleFreteChange(index, "cidade", e.target.value)}
+                      onChange={handleFreteInputChange(index, "cidade")}
                     />
                     {errors[`freteCidade_${index}`] && <ErrorMessage>{errors[`freteCidade_${index}`]}</ErrorMessage>}
                 </FlexContainer>
@@ -245,7 +260,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                       inputMode="numeric"
                       placeholder="100,00"
                       value={frete.valor}
-                      onChange={(e) => handleFreteChange(index, "valor", e.target.value)}
+                      onChange={handleFreteInputChange(index, "valor")}
                     />
                   </FlexContainer>
                   {errors[`freteValor_${index}`] && <ErrorMessage>{errors[`freteValor_${index}`]}</ErrorMessage>}

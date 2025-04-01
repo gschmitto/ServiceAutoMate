@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Popup, PopupContent, Button, Input, AcaoConteiner, DeleteButton, InputContainer, Label, FlexWrapper, FlexContainer, PrefixSymbol, SaveButton } from "../../../shared/styled";
+import { Popup, PopupContent, Button, Input, AcaoConteiner, DeleteButton, InputContainer, Label, FlexWrapper, FlexContainer, PrefixSymbol, SaveButton, ErrorMessage } from "../../../shared/styled";
 import { DadosNotaFiscal } from "../../../models/DadosNotaFiscal";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { ContainerNotasAdd, NotasContainer, NotasListContainer } from "./styled";
@@ -9,6 +9,7 @@ import { ClienteService } from "../../../services/ClienteService";
 import { toast } from "react-toastify";
 import { FiX } from "react-icons/fi";
 import AsyncSelect from "react-select/async";
+import { stringToFloat } from "../../../utils";
 
 interface SolicitacaoFormPopupProps {
   solicitacao?: SolicitacaoServico;
@@ -28,6 +29,10 @@ type FormState = {
   dataCriacao: string;
 };
 
+interface FormErrors {
+  [key: string]: string;
+}
+
 const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao, isOpen, onClose, onSave }) => {
   const [form, setForm] = useState<FormState>({
     id: "",
@@ -43,6 +48,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
   const [selectedCliente, setSelectedCliente] = useState<{ value: string; label: string; } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFreteCalculado, setIsFreteCalculado] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     if (solicitacao) {
@@ -83,21 +89,76 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
     }
   };
 
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+
+    if (selectedCliente === null) {
+      newErrors.clienteId = 'Cliente é obrigatório.';
+    }
+
+    if (!form.destinatario) {
+      newErrors.destinatario = 'Nome do destinatário é obrigatório.';
+    } else if (form.destinatario.length < 3) {
+      newErrors.destinatario = 'Nome do destinatário deve ter pelo menos 3 caracteres.';
+    }
+
+    if (!form.cidadeDestinatario) {
+      newErrors.cidadeDestinatario = 'Cidade do destinatário é obrigatória.';
+    } else if (form.cidadeDestinatario.length < 3) {
+      newErrors.cidadeDestinatario = 'Cidade do destinatário deve ter pelo menos 3 caracteres.';
+    }
+
+    if (form.notasFiscais && form.notasFiscais.length > 0) {
+      form.notasFiscais.forEach((nota, index) => {
+        if (!nota.numeroNota) {
+          newErrors[`numeroNota_${index}`] = 'Número da nota é obrigatório.';
+        } else if (nota.numeroNota.length < 3) {
+          newErrors[`numeroNota_${index}`] = 'Número da nota deve ter pelo menos 3 caracteres.';
+        }
+  
+        if (!nota.valorNota) {
+          newErrors[`valorNota_${index}`] = 'Valor da nota é obrigatório.';
+        } else if (stringToFloat(nota.valorNota.toString()) <= 0) {
+          newErrors[`valorNota_${index}`] = 'Valor da nota deve ser maior que zero.';
+        }
+      });
+    }
+
+    if (!form.quantidadeVolumes) {
+      newErrors.quantidadeVolumes = 'Quantidade de volumes é obrigatória.';
+    } else if (Number(form.quantidadeVolumes) <= 0) {
+      newErrors.quantidadeVolumes = 'Quantidade de volumes deve ser maior que zero.';
+    }
+  
+    setErrors(newErrors);
+    return newErrors;
+  };
+
   const handleSave = () => {
-    const clienteId = selectedCliente?.value ?? '';
-    onSave({
-      ...form,
-      notasFiscais: form.notasFiscais ?? [],
-      quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
-      valorFrete: Number(form.valorFrete) || 0,
-      clienteId,
-    }, form, (resultado) => {
-      setForm((prevForm) => ({
-        ...prevForm,
-        valorFrete: resultado.valorFrete,
-      }));
-    });
-    setIsFreteCalculado(true);
+    const errors = validateForm();  
+    if (Object.keys(errors).length <= 0) {
+      const clienteId = selectedCliente?.value ?? '';
+      onSave({
+        ...form,
+        notasFiscais: form.notasFiscais ?? [],
+        quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
+        valorFrete: Number(form.valorFrete) || 0,
+        clienteId,
+      }, form, (resultado) => {
+        setForm((prevForm) => ({
+          ...prevForm,
+          valorFrete: resultado.valorFrete,
+        }));
+      });
+      setIsFreteCalculado(true);
+    }
+  };
+
+  const handleClienteInputChange = (inputValue: any) => {
+    setSelectedCliente(inputValue);
+    if (inputValue !== '') {
+      setErrors((prevErrors: any) => ({ ...prevErrors, clienteId: null }));
+    }
   };
 
   const handleAddNotaFiscal = () => {
@@ -123,6 +184,20 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
     });
   };
 
+  const handleNotaFiscalInputChange = (index: number, field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleNotaFiscalChange(index, field, e.target.value);
+    if (e.target.value !== '') {
+      setErrors((prevErrors: any) => ({ ...prevErrors, [`${field}_${index}`]: null }));
+    }
+  };
+
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [field]: e.target.value });
+    if (e.target.value !== '') {
+      setErrors((prevErrors: any) => ({ ...prevErrors, [field]: null }));
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -141,7 +216,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
           placeholder="Buscar Cliente..."
           value={selectedCliente}
           onChange={(selectedOption) => {
-            setSelectedCliente(selectedOption);
+            handleClienteInputChange(selectedOption);
           }}
           onInputChange={(inputValue) => {
             setSearchTerm(inputValue);
@@ -165,24 +240,27 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
             }),
           }}
         />
+        {errors.clienteId && <ErrorMessage>{errors.clienteId}</ErrorMessage>}
         <InputContainer>
           <Label htmlFor="destinatario">Nome destinatário: <span style={{ color: "red" }}>*</span></Label>
           <Input
             type="text"
             placeholder="Destinatário"
             value={form.destinatario}
-            onChange={(e) => setForm({ ...form, destinatario: e.target.value })}
+            onChange={handleInputChange('destinatario')}
           />
         </InputContainer>
+        {errors.destinatario && <ErrorMessage>{errors.destinatario}</ErrorMessage>}
         <InputContainer>
           <Label htmlFor="cidadeDestinatario">Cidade destinatário: <span style={{ color: "red" }}>*</span></Label>
           <Input
             type="text"
             placeholder="Cidade Destinatário"
             value={form.cidadeDestinatario}
-            onChange={(e) => setForm({ ...form, cidadeDestinatario: e.target.value })}
+            onChange={handleInputChange('cidadeDestinatario')}
           />
         </InputContainer>
+        {errors.cidadeDestinatario && <ErrorMessage>{errors.cidadeDestinatario}</ErrorMessage>}
         <ContainerNotasAdd>
           <h4>Notas Fiscais</h4>
           {!isFreteCalculado && <Button onClick={handleAddNotaFiscal}>
@@ -197,12 +275,15 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
               <NotasContainer key={index}>
                 <FlexContainer display="flex" column>
                   <Label htmlFor="numeroNota">Número da nota: <span style={{ color: "red" }}>*</span></Label>
-                  <Input
-                    type="text"
-                    placeholder="12345678"
-                    value={nota.numeroNota}
-                    onChange={(e) => handleNotaFiscalChange(index, "numeroNota", e.target.value)}
-                  />
+                  <FlexContainer>
+                    <Input
+                      type="text"
+                      placeholder="12345678"
+                      value={nota.numeroNota}
+                      onChange={handleNotaFiscalInputChange(index, "numeroNota")}
+                    />
+                  </FlexContainer>
+                  {errors[`numeroNota_${index}`] && <ErrorMessage>{errors[`numeroNota_${index}`]}</ErrorMessage>}
                 </FlexContainer>
                 <FlexContainer display="flex" column>
                   <Label htmlFor="valorNota">Valor da nota: <span style={{ color: "red" }}>*</span></Label>
@@ -213,9 +294,10 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
                       inputMode="numeric"
                       placeholder="1000,00"
                       value={nota.valorNota}
-                      onChange={(e) => handleNotaFiscalChange(index, "valorNota", e.target.value)}
+                      onChange={handleNotaFiscalInputChange(index, "valorNota")}
                     />
                   </FlexContainer>
+                  {errors[`valorNota_${index}`] && <ErrorMessage>{errors[`valorNota_${index}`]}</ErrorMessage>}
                 </FlexContainer>
                 {!isFreteCalculado && (
                   <DeleteButton
@@ -237,8 +319,9 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
               inputMode="numeric"
               placeholder="1"
               value={form.quantidadeVolumes}
-              onChange={(e) => setForm({ ...form, quantidadeVolumes: e.target.value })}
+              onChange={handleInputChange('quantidadeVolumes')}
             />
+            {errors.quantidadeVolumes && <ErrorMessage>{errors.quantidadeVolumes}</ErrorMessage>}
           </FlexContainer>
           {isFreteCalculado && (
             <FlexContainer display="flex" column>
