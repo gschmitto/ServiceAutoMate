@@ -27,7 +27,6 @@ export const ClienteService = {
       throw new Error(error.response.data.detalhes || "Erro ao obter clientes.");
     }
   },
-    
 
   saveCliente: async (cliente: Cliente) => {
     try {

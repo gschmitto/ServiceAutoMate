@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { FiEdit, FiTrash } from "react-icons/fi";
-import { Button, DeleteButton, Popup, PopupContent, AcaoConteiner, Table, Th, Td } from "../../../shared/styled";
+import { FiEdit, FiTrash, FiX } from "react-icons/fi";
+import { Button, DeleteButton, Popup, PopupContent, AcaoConteiner, Table, Th, Td, SaveButton } from "../../../shared/styled";
 import { SolicitacaoServico, SolicitacoesServico } from "../../../models/SolicitacaoServico";
 import { SolicitacaoService } from "../../../services/SolicitacaoService";
 import SolicitacaoFormPopup from "../SolicitacaoFormPopup";
@@ -14,28 +14,29 @@ interface SolicitacaoTableProps {
 const SolicitacaoTable: React.FC<SolicitacaoTableProps> = ({ solicitacoes, fetchSolicitacoes }) => {
   const [popup, setPopup] = useState(false);
   const [popupExcluir, setPopupExcluir] = useState<string | null>(null);
-  const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<SolicitacaoServico | undefined>(undefined);
+  const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState<SolicitacoesServico | undefined>(undefined);
 
   const handleEdit = (id: string) => {
     const solicitacaoSelecionada = solicitacoes.find((s) => s.solicitacaoServico.id === id);
     if (solicitacaoSelecionada) {
-      setSolicitacaoSelecionada(solicitacaoSelecionada.solicitacaoServico);
+      setSolicitacaoSelecionada(solicitacaoSelecionada);
       setPopup(true);
     }
   };
 
   const handleSave = async (form: SolicitacaoServico) => {
     try {
-      await SolicitacaoService.saveSolicitacao({
+      const resultado = await SolicitacaoService.saveSolicitacao({
         ...form,
-        notasFiscais: form.notasFiscais.map((nota) => ({
-          numeroNota: nota.numeroNota,
-          valorNota: Number(nota.valorNota) || 0,
+        quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
+        notasFiscais: form.notasFiscais.map((nf) => ({
+          numeroNota: nf.numeroNota,
+          valorNota: Number(nf.valorNota) || 0,
         })),
       });
       fetchSolicitacoes();
-      setPopup(false);
       toast.success('Solicitação de serviço atualizada com sucesso!');
+      return resultado;
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -107,11 +108,14 @@ const SolicitacaoTable: React.FC<SolicitacaoTableProps> = ({ solicitacoes, fetch
 
       {popupExcluir && (
         <Popup>
-          <PopupContent>
+          <PopupContent width="350px">
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
+              <FiX size={24} onClick={() => setPopupExcluir(null)} style={{ cursor: "pointer" }} />
+            </div>
             <h3>Tem certeza que deseja excluir?</h3>
             <AcaoConteiner>
-              <Button onClick={handleDelete}>Sim</Button>
-              <Button onClick={() => setPopupExcluir(null)}>Não</Button>
+              <SaveButton onClick={handleDelete}>Sim</SaveButton>
+              <DeleteButton onClick={() => setPopupExcluir(null)}>Não</DeleteButton>
             </AcaoConteiner>
           </PopupContent>
         </Popup>

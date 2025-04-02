@@ -33,11 +33,15 @@ export const Popup = styled.div`
   animation: ${fadeIn} 0.3s ease;
 `;
 
-export const PopupContent = styled.div`
+interface PopupContentProps {
+  width?: string;
+}
+
+export const PopupContent = styled.div<PopupContentProps>`
   background: white;
   padding: 15px 30px 30px;
   border-radius: 10px;
-  width: 450px;
+  width: ${({ width }) => width ?? '450px'};
   max-width: 90%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: ${slideUp} 0.3s ease-out;
@@ -113,6 +117,22 @@ export const Input = styled.input`
   }
 `
 
+export const FiltroBtn = styled.button`
+  position: absolute;
+  right: 1px;
+  background: initial;
+  bottom: 7px;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+`;
+
+export const FiltroIcon = styled.i`
+  font-size: 16px;
+  margin-left: 10px;
+`;
+
 export const ErrorMessage = styled.div`
   color: red;
   font-size: 12px;
@@ -153,24 +173,23 @@ export const FlexWrapper = styled.div`
 `;
 
 interface FlexContainerProps {
-  marginRight?: number;
+  marginright?: number;
   display?: string;
-  column?: boolean;
+  iscolumn?: boolean;
 }
 
 export const FlexContainer = styled.div<FlexContainerProps>`
   display: flex;
   align-items: center;
-  margin-right: ${props => props.marginRight}px;
+  margin-right: ${props => props.marginright}px;
   display: ${props => props.display};
-  flex-direction: ${props => (props.column ? "column" : "row")};
+  flex-direction: ${props => (props.iscolumn ? "column" : "row")};
   align-items: baseline;
 `;
 
 export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-top: 30px;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -200,6 +219,14 @@ export const Td = styled.td`
 `;
 
 export const AcaoConteiner = styled.div`
+  margin-top: 20px;
   display: flex;
   justify-content: space-evenly;
+`;
+
+export const FiltroContent = styled.div`
+  display: flex;
+  width: 280px;
+  position: relative;
+  align-items: center;
 `;

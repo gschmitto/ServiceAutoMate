@@ -26,7 +26,8 @@ export const SolicitacaoService = {
   saveSolicitacao: async (solicitacao: SolicitacaoServico) => {
     try {
       if (solicitacao.id && solicitacao.id !== "0") {
-        await axios.put(`${API_URL}/${solicitacao.id}`, solicitacao);
+        const response =await axios.put(`${API_URL}/${solicitacao.id}/${solicitacao.clienteId}`, solicitacao);
+        return response.data;
       } else {
         const response = await axios.post(API_URL, solicitacao);
         return response.data;

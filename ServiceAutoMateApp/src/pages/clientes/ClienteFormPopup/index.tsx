@@ -201,7 +201,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
         </InputContainer>
         
         <FlexWrapper>
-          <FlexContainer marginRight={16} display="flex" column>
+          <FlexContainer marginright={16} display="flex" iscolumn={true}>
             <Label htmlFor="valorMaximoNota">Valor máx. nota: <span style={{ color: "red" }}>*</span></Label>
             <FlexContainer>
               <PrefixSymbol>R$</PrefixSymbol>
@@ -215,7 +215,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
             </FlexContainer>
             {errors.valorMaximoNota && <ErrorMessage>{errors.valorMaximoNota}</ErrorMessage>}
           </FlexContainer>
-          <FlexContainer marginRight={16} display="flex" column style={{maxWidth: 143}}>
+          <FlexContainer marginright={16} display="flex" iscolumn={true} style={{maxWidth: 143}}>
             <Label htmlFor="porcentagemCobranca">% cobrança: <span style={{ color: "red" }}>*</span></Label>
             <FlexContainer>
               <Input
@@ -241,7 +241,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
             {form.valorFretePorCidade.map((frete, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <FreteContainer key={index}>
-                <FlexContainer display="flex" column>
+                <FlexContainer display="flex" iscolumn={true}>
                   <Label htmlFor="cidade">Nome cidade: <span style={{ color: "red" }}>*</span></Label>
                     <Input
                       type="text"
@@ -251,7 +251,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({ cliente, isOpen, on
                     />
                     {errors[`freteCidade_${index}`] && <ErrorMessage>{errors[`freteCidade_${index}`]}</ErrorMessage>}
                 </FlexContainer>
-                <FlexContainer display="flex" column style={{maxWidth: 134}}>
+                <FlexContainer display="flex" iscolumn={true} style={{maxWidth: 134}}>
                   <Label htmlFor="valor">Valor frete p/ cidade: <span style={{ color: "red" }}>*</span></Label>
                   <FlexContainer>
                     <PrefixSymbol>R$</PrefixSymbol>

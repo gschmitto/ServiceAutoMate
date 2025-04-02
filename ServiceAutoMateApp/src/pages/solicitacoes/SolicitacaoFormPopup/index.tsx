@@ -3,7 +3,7 @@ import { Popup, PopupContent, Button, Input, AcaoConteiner, DeleteButton, InputC
 import { DadosNotaFiscal } from "../../../models/DadosNotaFiscal";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { ContainerNotasAdd, NotasContainer, NotasListContainer } from "./styled";
-import { SolicitacaoServico } from "../../../models/SolicitacaoServico";
+import { SolicitacaoServico, SolicitacoesServico } from "../../../models/SolicitacaoServico";
 import { Cliente } from "../../../models/Cliente";
 import { ClienteService } from "../../../services/ClienteService";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ import AsyncSelect from "react-select/async";
 import { stringToFloat } from "../../../utils";
 
 interface SolicitacaoFormPopupProps {
-  solicitacao?: SolicitacaoServico;
+  solicitacao?: SolicitacoesServico;
   isOpen: boolean;
   onClose: () => void;
   onSave: (solicitacao: SolicitacaoServico, form: FormState, callback: (resultado: any) => void) => void;
@@ -20,6 +20,7 @@ interface SolicitacaoFormPopupProps {
 
 type FormState = {
   id: string;
+  nomeCliente: string;
   clienteId: string | null;
   destinatario: string;
   cidadeDestinatario: string;
@@ -37,6 +38,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
   const [form, setForm] = useState<FormState>({
     id: "",
     clienteId: "",
+    nomeCliente: "",
     destinatario: "",
     cidadeDestinatario: "",
     quantidadeVolumes: "",
@@ -48,20 +50,27 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
   const [selectedCliente, setSelectedCliente] = useState<{ value: string; label: string; } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFreteCalculado, setIsFreteCalculado] = useState(false);
+  const [isEditado, setIsEditado] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     if (solicitacao) {
       setForm({
-        ...solicitacao,
-        quantidadeVolumes: solicitacao.quantidadeVolumes.toString(),
-        valorFrete: solicitacao.valorFrete.toString(),
-        notasFiscais: solicitacao.notasFiscais ?? null,
+        ...solicitacao.solicitacaoServico,
+        nomeCliente: solicitacao.nomeCliente ?? "",
+        quantidadeVolumes: solicitacao.solicitacaoServico.quantidadeVolumes.toString(),
+        valorFrete: solicitacao.solicitacaoServico.valorFrete.toString(),
+        notasFiscais: solicitacao.solicitacaoServico.notasFiscais ?? null,
       });
+      setSelectedCliente({
+        value: solicitacao.solicitacaoServico.clienteId,
+        label: solicitacao.nomeCliente
+      })
     } else {
       setForm({
         id: "",
         clienteId: "",
+        nomeCliente: "",
         destinatario: "",
         cidadeDestinatario: "",
         quantidadeVolumes: "",
@@ -150,6 +159,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
           valorFrete: resultado.valorFrete,
         }));
       });
+      setIsEditado(false);
       setIsFreteCalculado(true);
     }
   };
@@ -166,6 +176,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
       ...prev,
       notasFiscais: [...(prev.notasFiscais ?? [])].concat({ numeroNota: "", valorNota: "" }),
     }));
+    setIsFreteCalculado(false);
   };
 
   const handleRemoveNotaFiscal = (index: number) => {
@@ -173,6 +184,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
       ...prev,
       notasFiscais: (prev.notasFiscais ?? []).filter((_, i) => i !== index),
     }));
+    setIsFreteCalculado(false);
   };
 
   const handleNotaFiscalChange = (index: number, key: string, value: string) => {
@@ -189,6 +201,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
     if (e.target.value !== '') {
       setErrors((prevErrors: any) => ({ ...prevErrors, [`${field}_${index}`]: null }));
     }
+    setIsEditado(true);
   };
 
   const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,6 +209,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
     if (e.target.value !== '') {
       setErrors((prevErrors: any) => ({ ...prevErrors, [field]: null }));
     }
+    setIsEditado(true);
   };
 
   if (!isOpen) return null;
@@ -211,6 +225,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
         <AsyncSelect
           isClearable
           cacheOptions
+          isDisabled={!!form.id}
           defaultOptions
           loadOptions={loadOptions}
           placeholder="Buscar Cliente..."
@@ -263,7 +278,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
         {errors.cidadeDestinatario && <ErrorMessage>{errors.cidadeDestinatario}</ErrorMessage>}
         <ContainerNotasAdd>
           <h4>Notas Fiscais</h4>
-          {!isFreteCalculado && <Button onClick={handleAddNotaFiscal}>
+          {(!isFreteCalculado || !!form.id) && <Button onClick={handleAddNotaFiscal}>
             <FaPlus />
           </Button>}
         </ContainerNotasAdd>
@@ -273,7 +288,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
             {form.notasFiscais.map((nota, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <NotasContainer key={index}>
-                <FlexContainer display="flex" column>
+                <FlexContainer display="flex" iscolumn={true}>
                   <Label htmlFor="numeroNota">Número da nota: <span style={{ color: "red" }}>*</span></Label>
                   <FlexContainer>
                     <Input
@@ -285,7 +300,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
                   </FlexContainer>
                   {errors[`numeroNota_${index}`] && <ErrorMessage>{errors[`numeroNota_${index}`]}</ErrorMessage>}
                 </FlexContainer>
-                <FlexContainer display="flex" column>
+                <FlexContainer display="flex" iscolumn={true}>
                   <Label htmlFor="valorNota">Valor da nota: <span style={{ color: "red" }}>*</span></Label>
                   <FlexContainer>
                     <PrefixSymbol>R$</PrefixSymbol>
@@ -299,7 +314,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
                   </FlexContainer>
                   {errors[`valorNota_${index}`] && <ErrorMessage>{errors[`valorNota_${index}`]}</ErrorMessage>}
                 </FlexContainer>
-                {!isFreteCalculado && (
+                {(!isFreteCalculado || !!form.id) && (
                   <DeleteButton
                     onClick={() => handleRemoveNotaFiscal(index)}
                     style={{width: 32, height: 32, alignSelf: "center", padding: 8, marginTop: 9}}
@@ -312,7 +327,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
           </NotasListContainer>
         )}
         <FlexWrapper>
-          <FlexContainer marginRight={16} display="flex" column>
+          <FlexContainer marginright={16} display="flex" iscolumn={true}>
             <Label htmlFor="quantidadeVolumes">Quantidade de volumes: <span style={{ color: "red" }}>*</span></Label>
             <Input
               type="number"
@@ -323,8 +338,8 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
             />
             {errors.quantidadeVolumes && <ErrorMessage>{errors.quantidadeVolumes}</ErrorMessage>}
           </FlexContainer>
-          {isFreteCalculado && (
-            <FlexContainer display="flex" column>
+          {(isFreteCalculado || (!!form.id && !isEditado)) && (
+            <FlexContainer display="flex" iscolumn={true}>
               <Label htmlFor="valorFrete">Valor frete:</Label>
               <FlexContainer>
                 <PrefixSymbol>R$</PrefixSymbol>
@@ -341,7 +356,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({ solicitacao
         </FlexWrapper>
 
         <AcaoConteiner>
-          {isFreteCalculado ? (
+          {isFreteCalculado && !isEditado ? (
             <SaveButton onClick={onClose}>Concluir</SaveButton>
           ): (
             <>

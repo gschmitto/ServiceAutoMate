@@ -10,7 +10,8 @@ export const ContainerNotasAdd = styled.div`
 export const NotasListContainer = styled.div`
   max-height: 150px;
   overflow-y: auto;
-  border: 1px solid ${({ theme }) => theme.colors.gray};
+  border-top: 1px solid ${({ theme }) => theme.colors.gray};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.gray};
   border-radius: 5px;
   padding-right: 10px;
   margin-bottom: 10px;

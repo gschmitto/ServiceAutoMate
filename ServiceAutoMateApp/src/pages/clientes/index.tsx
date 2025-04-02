@@ -1,12 +1,20 @@
 import React, { useState, useEffect, useCallback, Fragment } from "react";
-import { AcaoAddContainer, Button, Container } from "../../shared/styled";
+import {
+  AcaoAddContainer,
+  Button,
+  Container,
+  FiltroBtn,
+  FiltroContent,
+  Input,
+} from "../../shared/styled";
 import { Cliente } from "../../models/Cliente";
 import { ClienteService } from "../../services/ClienteService";
 import Pagination from "../../components/Pagination";
 import ClienteTable from "./ClienteTable";
 import ClienteFormPopup from "./ClienteFormPopup";
 import Loader from "../../components/Loader";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import { FaTimes } from "react-icons/fa";
 
 interface ClientesProps {
   title: string;
@@ -18,10 +26,15 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
   const [totalPages, setTotalPages] = useState(10);
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(false);
+  const [nomePesquisa, setNomePesquisa] = useState("");
 
   const fetchClientes = useCallback(async () => {
     try {
-      const data = await ClienteService.getClientes(currentPage, 10);
+      const data = await ClienteService.getClientes(
+        currentPage,
+        10,
+        nomePesquisa
+      );
       setClientes(data.items);
       setTotalPages(data.totalPages);
     } catch (error: any) {
@@ -29,11 +42,11 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage]);
+  }, [currentPage, nomePesquisa]);
 
   useEffect(() => {
     fetchClientes();
-  }, [currentPage, fetchClientes]);
+  }, [currentPage, fetchClientes, nomePesquisa]);
 
   const handleSave = async (form: Cliente) => {
     try {
@@ -48,7 +61,7 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
       });
       fetchClientes();
       setPopup(false);
-      toast.success('Cliente adicionado com sucesso!');
+      toast.success("Cliente adicionado com sucesso!");
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -58,14 +71,31 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
     <Container>
       <AcaoAddContainer>
         <h2>{title}</h2>
-        <Button onClick={() => setPopup(true)}>
-          + Novo Cliente
-        </Button>
+        <Button onClick={() => setPopup(true)}>+ Novo Cliente</Button>
       </AcaoAddContainer>
-      {loading ? <Loader /> : (
+      {loading ? (
+        <Loader />
+      ) : (
         <Fragment>
+          <FiltroContent>
+            <Input
+              type="text"
+              value={nomePesquisa}
+              onChange={(e) => setNomePesquisa(e.target.value)}
+              placeholder="Pesquisar pelo nome do cliente..."
+            />
+            {nomePesquisa && (
+              <FiltroBtn onClick={() => setNomePesquisa("")}>
+                <FaTimes />
+              </FiltroBtn>
+            )}
+          </FiltroContent>
           <ClienteTable clientes={clientes} fetchClientes={fetchClientes} />
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </Fragment>
       )}
       {popup && (
