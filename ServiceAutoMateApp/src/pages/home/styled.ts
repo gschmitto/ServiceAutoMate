@@ -5,7 +5,11 @@ export const Container = styled.div`
   align-items: center;
   justify-content: center;
   height: calc(100vh - 69.11px);
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary}, ${({ theme }) => theme.colors.secondary});
+  background: linear-gradient(
+    135deg,
+    ${({ theme }) => theme.colors.primary},
+    ${({ theme }) => theme.colors.secondary}
+  );
   color: white;
   text-align: center;
   overflow: hidden;
@@ -46,6 +50,6 @@ export const ActionButton = styled.button`
   transition: 0.3s;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.secondary};;
+    background: ${({ theme }) => theme.colors.secondary};
   }
 `;

@@ -18,7 +18,11 @@ namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
             ObterSolicitacoesServicoQuery request,
             CancellationToken cancellationToken)
         {
-            var totalCount = await _solicitacaoServicoRepository.GetTotalAsync();
+            var totalCount = await _solicitacaoServicoRepository.GetTotalAsync(
+                request.ClienteId,
+                request.DataInicial,
+                request.DataFinal
+            );
 
             var solicitacoesServico = await _solicitacaoServicoRepository.GetPaginationAsync(
                 request.ClienteId,

@@ -1,5 +1,8 @@
 import axios from "axios";
-import { SolicitacaoServico, SolicitacoesServico } from "../models/SolicitacaoServico";
+import {
+  SolicitacaoServico,
+  SolicitacoesServico,
+} from "../models/SolicitacaoServico";
 
 const API_URL = "/api/solicitacaoServico";
 
@@ -12,28 +15,44 @@ interface PagedResult<T> {
 }
 
 export const SolicitacaoService = {
-  getSolicitacoes: async (page = 1, pageSize = 10, clienteId?: string, dataInicial?: Date, dataFinal?: Date) => {
+  getSolicitacoes: async (
+    page = 1,
+    pageSize = 10,
+    clienteId?: string,
+    dataInicial?: Date | null,
+    dataFinal?: Date | null
+  ) => {
     try {
-      const response = await axios.get<PagedResult<SolicitacoesServico>>(`${API_URL}`, {
-        params: { page, pageSize, clienteId, dataInicial, dataFinal }
-      });
+      const response = await axios.get<PagedResult<SolicitacoesServico>>(
+        `${API_URL}`,
+        {
+          params: { page, pageSize, clienteId, dataInicial, dataFinal },
+        }
+      );
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response.data.detalhes || "Erro ao obter solicitações de serviço.");
+      throw new Error(
+        error.response.data.detalhes ?? "Erro ao obter solicitações de serviço."
+      );
     }
   },
 
   saveSolicitacao: async (solicitacao: SolicitacaoServico) => {
     try {
       if (solicitacao.id && solicitacao.id !== "0") {
-        const response =await axios.put(`${API_URL}/${solicitacao.id}/${solicitacao.clienteId}`, solicitacao);
+        const response = await axios.put(
+          `${API_URL}/${solicitacao.id}/${solicitacao.clienteId}`,
+          solicitacao
+        );
         return response.data;
       } else {
         const response = await axios.post(API_URL, solicitacao);
         return response.data;
       }
     } catch (error: any) {
-      throw new Error(error.response.data.detalhes || "Erro ao salvar solicitação de serviço.");
+      throw new Error(
+        error.response.data.detalhes ?? "Erro ao salvar solicitação de serviço."
+      );
     }
   },
 
@@ -41,7 +60,10 @@ export const SolicitacaoService = {
     try {
       await axios.delete(`${API_URL}/${id}`);
     } catch (error: any) {
-      throw new Error(error.response.data.detalhes || "Erro ao excluir solicitação de serviço.");
+      throw new Error(
+        error.response.data.detalhes ??
+          "Erro ao excluir solicitação de serviço."
+      );
     }
   },
 };

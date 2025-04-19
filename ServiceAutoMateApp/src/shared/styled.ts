@@ -41,7 +41,7 @@ export const PopupContent = styled.div<PopupContentProps>`
   background: white;
   padding: 15px 30px 30px;
   border-radius: 10px;
-  width: ${({ width }) => width ?? '450px'};
+  width: ${({ width }) => width ?? "450px"};
   max-width: 90%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: ${slideUp} 0.3s ease-out;
@@ -52,7 +52,7 @@ export const Container = styled.div`
   padding: 30px;
   background-color: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: ${({ theme }) => theme.colors.black};
 `;
 
@@ -105,6 +105,7 @@ export const Input = styled.input`
   border-radius: 5px;
   font-size: 16px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: "Roboto", sans-serif;
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.secondary};
@@ -115,7 +116,7 @@ export const Input = styled.input`
   &:hover {
     border-color: #0056b3;
   }
-`
+`;
 
 export const FiltroBtn = styled.button`
   position: absolute;
@@ -181,9 +182,9 @@ interface FlexContainerProps {
 export const FlexContainer = styled.div<FlexContainerProps>`
   display: flex;
   align-items: center;
-  margin-right: ${props => props.marginright}px;
-  display: ${props => props.display};
-  flex-direction: ${props => (props.iscolumn ? "column" : "row")};
+  margin-right: ${(props) => props.marginright}px;
+  display: ${(props) => props.display};
+  flex-direction: ${(props) => (props.iscolumn ? "column" : "row")};
   align-items: baseline;
 `;
 
@@ -224,9 +225,14 @@ export const AcaoConteiner = styled.div`
   justify-content: space-evenly;
 `;
 
-export const FiltroContent = styled.div`
+interface FiltroContentProps {
+  width?: number;
+}
+
+export const FiltroContent = styled.div<FiltroContentProps>`
   display: flex;
-  width: 280px;
+  width: ${({ width }) => width}px;
   position: relative;
   align-items: center;
+  justify-content: space-between;
 `;

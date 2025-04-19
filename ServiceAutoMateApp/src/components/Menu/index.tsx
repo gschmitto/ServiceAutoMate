@@ -14,10 +14,16 @@ const Menu: React.FC = () => {
         <StyledLink to="/" className={isActive("/") ? "active" : ""}>
           <AiOutlineHome size={24} />
         </StyledLink>
-        <StyledLink to="/clientes" className={isActive("/clientes") ? 'active' : ''}>
+        <StyledLink
+          to="/clientes"
+          className={isActive("/clientes") ? "active" : ""}
+        >
           Clientes
         </StyledLink>
-        <StyledLink to="/solicitacoes" className={isActive("/solicitacoes") ? 'active' : ''}>
+        <StyledLink
+          to="/solicitacoes"
+          className={isActive("/solicitacoes") ? "active" : ""}
+        >
           Solicitação de Serviços
         </StyledLink>
       </NavLinks>

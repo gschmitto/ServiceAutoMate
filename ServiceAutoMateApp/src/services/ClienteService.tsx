@@ -15,16 +15,18 @@ export const ClienteService = {
   getClientes: async (page = 1, pageSize = 10, nome?: string) => {
     try {
       const params = new URLSearchParams();
-      params.set('page', page.toString());
-      params.set('pageSize', pageSize.toString());
+      params.set("page", page.toString());
+      params.set("pageSize", pageSize.toString());
       if (nome) {
-        params.set('nome', nome);
+        params.set("nome", nome);
       }
       const url = `${API_URL}?${params.toString()}`;
       const response = await axios.get<PagedResult<Cliente>>(url);
       return response.data;
     } catch (error: any) {
-      throw new Error(error.response.data.detalhes || "Erro ao obter clientes.");
+      throw new Error(
+        error.response.data.detalhes ?? "Erro ao obter clientes."
+      );
     }
   },
 
@@ -36,7 +38,9 @@ export const ClienteService = {
         await axios.post(API_URL, cliente);
       }
     } catch (error: any) {
-      throw new Error(error.response.data.detalhes || "Erro ao salvar cliente.");
+      throw new Error(
+        error.response.data.detalhes ?? "Erro ao salvar cliente."
+      );
     }
   },
 
@@ -44,7 +48,9 @@ export const ClienteService = {
     try {
       await axios.delete(`${API_URL}/${id}`);
     } catch (error: any) {
-      throw new Error(error.response.data.detalhes || "Erro ao excluir cliente.");
+      throw new Error(
+        error.response.data.detalhes ?? "Erro ao excluir cliente."
+      );
     }
   },
 };

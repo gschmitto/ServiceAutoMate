@@ -1,5 +1,12 @@
 import React from "react";
-import { ActionButton, Container, Content, Subtitle, Title, ButtonContainer } from "./styled";
+import {
+  ActionButton,
+  Container,
+  Content,
+  Subtitle,
+  Title,
+  ButtonContainer,
+} from "./styled";
 import { useNavigate } from "react-router-dom";
 
 interface HomeProps {
@@ -15,7 +22,9 @@ const Home: React.FC<HomeProps> = ({ title }) => {
         <Title>{title}</Title>
         <Subtitle>Automatize processos e ganhe eficiência!</Subtitle>
         <ButtonContainer>
-          <ActionButton onClick={() => navigate("/clientes")}>Clientes</ActionButton>
+          <ActionButton onClick={() => navigate("/clientes")}>
+            Clientes
+          </ActionButton>
           <ActionButton onClick={() => navigate("/solicitacoes")}>
             Solicitações de Serviço
           </ActionButton>

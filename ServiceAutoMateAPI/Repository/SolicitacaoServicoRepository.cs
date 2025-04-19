@@ -70,9 +70,29 @@ namespace ServiceAutoMateAPI.Repository
             });
         }
 
-        public async Task<long> GetTotalAsync()
+        public async Task<long> GetTotalAsync(string? clienteId, DateTime? dataInicio, DateTime? dataFim)
         {
-            return await _solicitacoesCollection.CountDocumentsAsync(FilterDefinition<SolicitacaoServico>.Empty);
+            var filterBuilder = Builders<SolicitacaoServico>.Filter;
+            var filters = new List<FilterDefinition<SolicitacaoServico>>();
+        
+            if (!string.IsNullOrEmpty(clienteId))
+            {
+                filters.Add(filterBuilder.Eq(s => s.ClienteId, clienteId));
+            }
+        
+            if (dataInicio.HasValue)
+            {
+                filters.Add(filterBuilder.Gte(s => s.DataCriacao, dataInicio.Value));
+            }
+        
+            if (dataFim.HasValue)
+            {
+                filters.Add(filterBuilder.Lte(s => s.DataCriacao, dataFim.Value));
+            }
+        
+            var filter = filters.Count > 0 ? filterBuilder.And(filters) : FilterDefinition<SolicitacaoServico>.Empty;
+        
+            return await _solicitacoesCollection.CountDocumentsAsync(filter);
         }
 
         public async Task<SolicitacaoServico> GetByIdAsync(string id)

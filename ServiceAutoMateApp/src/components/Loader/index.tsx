@@ -11,5 +11,5 @@ const Loader = () => {
     </LoaderContainer>
   );
 };
-  
+
 export default Loader;

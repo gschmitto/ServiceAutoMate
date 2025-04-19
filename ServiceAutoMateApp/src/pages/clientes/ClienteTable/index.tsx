@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import { FiEdit, FiTrash, FiX } from "react-icons/fi";
-import { Button, DeleteButton, Popup, PopupContent, AcaoConteiner, Table, Th, Td, SaveButton } from "../../../shared/styled";
+import {
+  Button,
+  DeleteButton,
+  Popup,
+  PopupContent,
+  AcaoConteiner,
+  Table,
+  Th,
+  Td,
+  SaveButton,
+} from "../../../shared/styled";
 import { Cliente } from "../../../models/Cliente";
 import { ClienteService } from "../../../services/ClienteService";
 import ClienteFormPopup from "../ClienteFormPopup";
@@ -11,10 +21,15 @@ interface ClienteTableProps {
   fetchClientes: () => void;
 }
 
-const ClienteTable: React.FC<ClienteTableProps> = ({ clientes, fetchClientes }) => {
+const ClienteTable: React.FC<ClienteTableProps> = ({
+  clientes,
+  fetchClientes,
+}) => {
   const [popup, setPopup] = useState(false);
   const [popupExcluir, setPopupExcluir] = useState<string | null>(null);
-  const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | undefined>(undefined);
+  const [clienteSelecionado, setClienteSelecionado] = useState<
+    Cliente | undefined
+  >(undefined);
 
   const handleEdit = (id: string) => {
     const clienteSelecionado = clientes.find((cliente) => cliente.id === id);
@@ -37,7 +52,7 @@ const ClienteTable: React.FC<ClienteTableProps> = ({ clientes, fetchClientes }) 
       });
       fetchClientes();
       setPopup(false);
-      toast.success('Cliente atualizado com sucesso!');
+      toast.success("Cliente atualizado com sucesso!");
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -53,7 +68,7 @@ const ClienteTable: React.FC<ClienteTableProps> = ({ clientes, fetchClientes }) 
         await ClienteService.deleteCliente(popupExcluir);
         fetchClientes();
         setPopupExcluir(null);
-        toast.success('Cliente excluído com sucesso!');
+        toast.success("Cliente excluído com sucesso!");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -108,13 +123,25 @@ const ClienteTable: React.FC<ClienteTableProps> = ({ clientes, fetchClientes }) 
       {popupExcluir && (
         <Popup>
           <PopupContent width="350px">
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "10px" }}>
-              <FiX size={24} onClick={() => setPopupExcluir(null)} style={{ cursor: "pointer" }} />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginBottom: "10px",
+              }}
+            >
+              <FiX
+                size={24}
+                onClick={() => setPopupExcluir(null)}
+                style={{ cursor: "pointer" }}
+              />
             </div>
             <h3>Tem certeza que deseja excluir?</h3>
             <AcaoConteiner>
               <SaveButton onClick={handleDelete}>Sim</SaveButton>
-              <DeleteButton onClick={() => setPopupExcluir(null)}>Não</DeleteButton>
+              <DeleteButton onClick={() => setPopupExcluir(null)}>
+                Não
+              </DeleteButton>
             </AcaoConteiner>
           </PopupContent>
         </Popup>

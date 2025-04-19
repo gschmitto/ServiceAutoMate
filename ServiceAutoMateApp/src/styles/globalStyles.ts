@@ -21,6 +21,6 @@ const globalStyle = createGlobalStyle`
     text-decoration: none;
     color: inherit;
   }
-`
+`;
 
-export default globalStyle
+export default globalStyle;

@@ -1,4 +1,4 @@
 export interface DadosNotaFiscal {
   numeroNota: string;
-  valorNota: string |number;
+  valorNota: string | number;
 }

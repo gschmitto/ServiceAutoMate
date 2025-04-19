@@ -5,7 +5,11 @@ namespace ServiceAutoMateAPI.Repository
     public interface ISolicitacaoServicoRepository
     {
         Task<SolicitacaoServico> AddAsync(SolicitacaoServico solicitacao, CancellationToken cancellationToken);
-        Task<long> GetTotalAsync();
+        Task<long> GetTotalAsync(
+            string? clienteId,
+            DateTime? dataInicio,
+            DateTime? dataFim
+        );
         Task<IEnumerable<SolicitacaoServico>> GetPaginationAsync(
             string? clienteId,
             DateTime? dataInicio,

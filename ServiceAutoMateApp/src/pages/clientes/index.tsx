@@ -77,7 +77,7 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
         <Loader />
       ) : (
         <Fragment>
-          <FiltroContent>
+          <FiltroContent width={280}>
             <Input
               type="text"
               value={nomePesquisa}
