@@ -15,4 +15,5 @@ export interface SolicitacaoServico {
   valorFrete: number;
   notasFiscais: DadosNotaFiscal[];
   dataCriacao: string;
+  dataEdicao: string;
 }

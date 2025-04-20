@@ -116,7 +116,7 @@ const SolicitacaoTable: React.FC<SolicitacaoTableProps> = ({
                 })}
               </Td>
               <Td>
-                {new Date(s.solicitacaoServico.dataCriacao).toLocaleDateString(
+                {new Date(s.solicitacaoServico.dataEdicao ?? s.solicitacaoServico.dataCriacao).toLocaleDateString(
                   "pt-BR",
                   { day: "2-digit", month: "2-digit", year: "numeric" }
                 )}

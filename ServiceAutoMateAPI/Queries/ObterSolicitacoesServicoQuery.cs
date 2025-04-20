@@ -5,13 +5,13 @@ using ServiceAutoMateAPI.Responses;
 namespace ServiceAutoMateAPI.Queries
 {
     public class ObterSolicitacoesServicoQuery(
-        string? clienteId,
+        Guid? clienteId,
         DateTime? dataInicial,
         DateTime? dataFinal,
         int page,
         int pageSize) : IRequest<PagedResult<SolicitacaoServicoResponse>>
     {
-        public string? ClienteId { get; set; } = clienteId;
+        public Guid? ClienteId { get; set; } = clienteId;
         public DateTime? DataInicial { get; set; } = dataInicial;
         public DateTime? DataFinal { get; set; } = dataFinal;
         public int Page { get; set; } = page;

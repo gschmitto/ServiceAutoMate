@@ -2,7 +2,7 @@ namespace ServiceAutoMateAPI.Models
 {
     public class Cliente
     {
-        public required string Id { get; set; }
+        public required Guid Id { get; set; }
         public required string NomeEmpresa { get; set; }
         public required string Endereco { get; set; }
         public required string Cidade { get; set; }

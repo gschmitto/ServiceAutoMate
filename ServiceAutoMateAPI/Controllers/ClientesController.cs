@@ -63,7 +63,7 @@ namespace ServiceAutoMateAPI.Controllers
         [ProducesResponseType(typeof(List<ErroBadRequestResponse>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> EditarCliente(
-            [FromRoute] string id,
+            [FromRoute] Guid id,
             [FromBody] EditarClienteDto dto)
         {
             EditarClienteCommand editarClienteCommand = new()
@@ -89,7 +89,7 @@ namespace ServiceAutoMateAPI.Controllers
         [ProducesResponseType(typeof(SucessoResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteCliente(string id)
+        public async Task<IActionResult> DeleteCliente(Guid id)
         {
             var command = new ExcluirClienteCommand { Id = id };
             await _mediator.Send(command);

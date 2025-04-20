@@ -4,6 +4,6 @@ namespace ServiceAutoMateAPI.Commands.Clientes
 {
     public class ExcluirClienteCommand : IRequest<bool>
     {
-        public required string Id { get; set; }
+        public required Guid Id { get; set; }
     }
 }

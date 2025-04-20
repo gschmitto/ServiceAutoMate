@@ -6,18 +6,18 @@ namespace ServiceAutoMateAPI.Repository
     {
         Task<SolicitacaoServico> AddAsync(SolicitacaoServico solicitacao, CancellationToken cancellationToken);
         Task<long> GetTotalAsync(
-            string? clienteId,
+            Guid? clienteId,
             DateTime? dataInicio,
             DateTime? dataFim
         );
         Task<IEnumerable<SolicitacaoServico>> GetPaginationAsync(
-            string? clienteId,
+            Guid? clienteId,
             DateTime? dataInicio,
             DateTime? dataFim,
             int page,
             int pageSize);
-        Task<SolicitacaoServico> GetByIdAsync(string id);
+        Task<SolicitacaoServico> GetByIdAsync(Guid id);
         Task UpdateAsync(SolicitacaoServico solicitacao, CancellationToken cancellationToken);
-        Task DeleteAsync(string id);
+        Task DeleteAsync(Guid id);
     }
 }

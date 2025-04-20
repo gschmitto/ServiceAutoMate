@@ -30,7 +30,7 @@ namespace ServiceAutoMateAPI.Controllers
         [ProducesResponseType(typeof(PagedResult<SolicitacaoServicoResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterSolicitacoes(
-            [FromQuery] string? clienteId,
+            [FromQuery] Guid? clienteId,
             [FromQuery] DateTime? dataInicial,
             [FromQuery] DateTime? dataFinal,
             [FromQuery] int page = 1,
@@ -53,8 +53,8 @@ namespace ServiceAutoMateAPI.Controllers
         [ProducesResponseType(typeof(List<ErroBadRequestResponse>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> EditarSolicitacao(
-            [FromRoute] string id,
-            [FromRoute] string clienteId,
+            [FromRoute] Guid id,
+            [FromRoute] Guid clienteId,
             [FromBody] EditarSolicitacaoServicoDto dto)
         {
             var command = new EditarSolicitacaoServicoCommand()
@@ -72,7 +72,7 @@ namespace ServiceAutoMateAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> ExcluirSolicitacao(string id)
+        public async Task<IActionResult> ExcluirSolicitacao(Guid id)
         {
             await _mediator.Send(new ExcluirSolicitacaoServicoCommand { Id = id });
             return NoContent();

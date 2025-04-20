@@ -220,7 +220,6 @@ export const Td = styled.td`
 `;
 
 export const AcaoConteiner = styled.div`
-  margin-top: 20px;
   display: flex;
   justify-content: space-evenly;
 `;

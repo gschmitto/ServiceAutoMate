@@ -24,7 +24,7 @@ namespace ServiceAutoMateAPI.Handlers.Clientes
 
             var cliente = new Cliente
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 NomeEmpresa = request.NomeEmpresa,
                 Endereco = request.Endereco,
                 Cidade = request.Cidade,

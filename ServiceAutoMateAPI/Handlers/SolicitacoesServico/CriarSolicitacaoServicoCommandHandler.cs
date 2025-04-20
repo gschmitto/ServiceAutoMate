@@ -33,7 +33,7 @@ namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
 
             var solicitacaoServico = new SolicitacaoServico
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 ClienteId = request.ClienteId,
                 QuantidadeVolumes = request.QuantidadeVolumes,
                 Destinatario = request.Destinatario,

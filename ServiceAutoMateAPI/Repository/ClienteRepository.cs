@@ -1,105 +1,74 @@
-using MongoDB.Bson;
-using MongoDB.Driver;
+using Microsoft.EntityFrameworkCore;
+using ServiceAutoMateAPI.Data;
 using ServiceAutoMateAPI.Models;
 
 namespace ServiceAutoMateAPI.Repository
 {
-    public class ClienteRepository(IMongoDatabase database) : IClienteRepository
+    public class ClienteRepository(AppDbContext context) : IClienteRepository
     {
-        private readonly IMongoCollection<Cliente> _clientesCollection = database.GetCollection<Cliente>("Clientes");
+        private readonly AppDbContext _context = context;
 
         public async Task<Cliente> AddAsync(Cliente cliente, CancellationToken cancellationToken)
         {
-            await _clientesCollection.InsertOneAsync(cliente, cancellationToken: cancellationToken);
+            _context.Clientes.Add(cliente);
+            await _context.SaveChangesAsync(cancellationToken);
             return cliente;
         }
 
         public async Task<IEnumerable<Cliente>> GetPaginationAsync(int page, int pageSize, string? nome = null)
         {
-            var filterBuilder = Builders<Cliente>.Filter;
-            var filters = new List<FilterDefinition<Cliente>>();
+            var query = _context.Clientes.AsQueryable();
 
-            if (!string.IsNullOrEmpty(nome))
+            if (!string.IsNullOrWhiteSpace(nome))
             {
-                filters.Add(filterBuilder.Regex(s => s.NomeEmpresa, new BsonRegularExpression(nome, "i")));
+                query = query.Where(c => EF.Functions.ILike(c.NomeEmpresa, $"%{nome}%"));
             }
 
-            var filter = filters.Count > 0 ? filterBuilder.And(filters) : FilterDefinition<Cliente>.Empty;
-
-            var clientes = await _clientesCollection
-                .Aggregate()
-                .Match(filter)
-                .Project(cliente => new
-                {
-                    cliente.Id,
-                    cliente.NomeEmpresa,
-                    cliente.Endereco,
-                    cliente.Cidade,
-                    cliente.ValorMaximoNota,
-                    cliente.PorcentagemCobranca,
-                    cliente.DataCriacao,
-                    cliente.DataEdicao,
-                    cliente.ValorFretePorCidade,
-                    DataOrdenada = cliente.DataEdicao ?? cliente.DataCriacao
-                })
-                .SortByDescending(cliente => cliente.DataOrdenada)
+            return await query
+                .OrderByDescending(c => c.DataEdicao ?? c.DataCriacao)
                 .Skip((page - 1) * pageSize)
-                .Limit(pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync();
-
-            return clientes.Select(cliente => new Cliente
-            {
-                Id = cliente.Id,
-                NomeEmpresa = cliente.NomeEmpresa,
-                Endereco = cliente.Endereco,
-                Cidade = cliente.Cidade,
-                ValorMaximoNota = cliente.ValorMaximoNota,
-                PorcentagemCobranca = cliente.PorcentagemCobranca,
-                ValorFretePorCidade = cliente.ValorFretePorCidade,
-                DataCriacao = cliente.DataCriacao,
-                DataEdicao = cliente.DataEdicao,
-            });
         }
 
         public async Task<long> GetTotalAsync()
         {
-            return await _clientesCollection.CountDocumentsAsync(FilterDefinition<Cliente>.Empty);
+            return await _context.Clientes.LongCountAsync();
         }
 
-        public async Task<Cliente> GetByDetailsAsync(string nomeEmpresa, string endereco, string cidade, string? id)
+        public async Task<Cliente?> GetByDetailsAsync(string nomeEmpresa, string endereco, string cidade, Guid? id)
         {
-            return await _clientesCollection
-                .Find(cliente => 
-                    cliente.NomeEmpresa == nomeEmpresa && 
-                    cliente.Endereco == endereco && 
-                    cliente.Cidade == cidade &&
-                    cliente.Id != id)
-                .FirstOrDefaultAsync();
+            return await _context.Clientes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c =>
+                    c.NomeEmpresa == nomeEmpresa &&
+                    c.Endereco == endereco &&
+                    c.Cidade == cidade &&
+                    (!id.HasValue || c.Id != id.Value));
         }
 
-        public async Task<Cliente> GetByIdAsync(string id)
+        public async Task<Cliente?> GetByIdAsync(Guid id)
         {
-            return await _clientesCollection.Find(cliente => cliente.Id == id).FirstOrDefaultAsync();
+            return await _context.Clientes
+                .Include(c => c.ValorFretePorCidade)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task UpdateAsync(Cliente cliente, CancellationToken cancellationToken)
         {
-            var filter = Builders<Cliente>.Filter.Eq(c => c.Id, cliente.Id);
-            var update = Builders<Cliente>.Update
-                .Set(c => c.NomeEmpresa, cliente.NomeEmpresa)
-                .Set(c => c.Endereco, cliente.Endereco)
-                .Set(c => c.Cidade, cliente.Cidade)
-                .Set(c => c.ValorFretePorCidade, cliente.ValorFretePorCidade)
-                .Set(c => c.ValorMaximoNota, cliente.ValorMaximoNota)
-                .Set(c => c.PorcentagemCobranca, cliente.PorcentagemCobranca)
-                .Set(c => c.DataEdicao, cliente.DataEdicao);
-
-            await _clientesCollection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+            _context.Clientes.Update(cliente);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(Guid id)
         {
-            await _clientesCollection.DeleteOneAsync(c => c.Id == id);
+            var cliente = await _context.Clientes.FindAsync(id);
+            if (cliente != null)
+            {
+                _context.Clientes.Remove(cliente);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

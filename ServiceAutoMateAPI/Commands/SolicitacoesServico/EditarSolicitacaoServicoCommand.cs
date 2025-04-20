@@ -2,6 +2,6 @@ namespace ServiceAutoMateAPI.Commands.SolicitacoesServico
 {
     public class EditarSolicitacaoServicoCommand : SolicitacaoServicoCommand
     {
-        public required string Id { get; set; }
+        public required Guid Id { get; set; }
     }
 }
