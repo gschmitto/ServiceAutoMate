@@ -68,6 +68,7 @@ const Solicitacoes: React.FC<SolicitacoesProps> = ({ title }) => {
         valorFrete: Number(form.valorFrete) || 0,
         quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
         notasFiscais: form.notasFiscais.map((nf) => ({
+          ...nf,
           numeroNota: nf.numeroNota,
           valorNota: Number(nf.valorNota) || 0,
         })),

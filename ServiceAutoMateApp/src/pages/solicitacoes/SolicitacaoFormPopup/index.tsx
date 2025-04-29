@@ -53,6 +53,7 @@ type FormState = {
   valorFrete: string | number;
   notasFiscais: DadosNotaFiscal[] | null;
   dataCriacao: string;
+  dataEdicao: string;
 };
 
 export interface FormErrors {
@@ -75,6 +76,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({
     valorFrete: "",
     notasFiscais: null,
     dataCriacao: "",
+    dataEdicao: "",
   });
 
   const [selectedCliente, setSelectedCliente] = useState<{
@@ -111,6 +113,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({
         valorFrete: "",
         notasFiscais: null,
         dataCriacao: "",
+        dataEdicao: "",
       });
     }
   }, [solicitacao]);
@@ -219,11 +222,13 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({
     setForm((prev) => ({
       ...prev,
       notasFiscais: [...(prev.notasFiscais ?? [])].concat({
+        id: crypto.randomUUID(),
         numeroNota: "",
         valorNota: "",
       }),
     }));
     setIsFreteCalculado(false);
+    setIsEditado(true);
   };
 
   const handleRemoveNotaFiscal = (index: number) => {
@@ -232,6 +237,7 @@ const SolicitacaoFormPopup: React.FC<SolicitacaoFormPopupProps> = ({
       notasFiscais: (prev.notasFiscais ?? []).filter((_, i) => i !== index),
     }));
     setIsFreteCalculado(false);
+    setIsEditado(true);
   };
 
   const handleNotaFiscalChange = (

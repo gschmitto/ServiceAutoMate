@@ -28,7 +28,7 @@ namespace ServiceAutoMateAPI.Handlers.Clientes
                 NomeEmpresa = request.NomeEmpresa,
                 Endereco = request.Endereco,
                 Cidade = request.Cidade,
-                ValorFretePorCidade = request.ValorFretePorCidade,
+                FretesPorCidade = request.FretesPorCidade,
                 ValorMaximoNota = request.ValorMaximoNota,
                 PorcentagemCobranca = request.PorcentagemCobranca,
                 DataCriacao = DateTime.UtcNow

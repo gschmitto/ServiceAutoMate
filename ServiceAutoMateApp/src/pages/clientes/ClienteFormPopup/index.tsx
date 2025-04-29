@@ -40,7 +40,7 @@ type FormState = {
   cidade: string;
   valorMaximoNota: string;
   porcentagemCobranca: string;
-  valorFretePorCidade: FretePorCidade[] | null;
+  fretesPorCidade: FretePorCidade[] | null;
 };
 
 const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
@@ -56,7 +56,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
     cidade: "",
     valorMaximoNota: "",
     porcentagemCobranca: "",
-    valorFretePorCidade: null,
+    fretesPorCidade: null,
   });
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -66,7 +66,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
         ...cliente,
         porcentagemCobranca: cliente.porcentagemCobranca.toString(),
         valorMaximoNota: cliente.valorMaximoNota.toString(),
-        valorFretePorCidade: cliente.valorFretePorCidade ?? null,
+        fretesPorCidade: cliente.fretesPorCidade ?? null,
       });
     } else {
       setForm({
@@ -76,7 +76,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
         cidade: "",
         valorMaximoNota: "",
         porcentagemCobranca: "",
-        valorFretePorCidade: null,
+        fretesPorCidade: null,
       });
     }
   }, [cliente]);
@@ -122,8 +122,8 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
         "Valor porcentagem da cobrança deve ser maior que zero.";
     }
 
-    if (form.valorFretePorCidade && form.valorFretePorCidade.length > 0) {
-      form.valorFretePorCidade.forEach((frete, index) => {
+    if (form.fretesPorCidade && form.fretesPorCidade.length > 0) {
+      form.fretesPorCidade.forEach((frete, index) => {
         if (!frete.cidade) {
           newErrors[`freteCidade_${index}`] = "Nome da cidade é obrigatório.";
         } else if (frete.cidade.length < 3) {
@@ -161,7 +161,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
   const handleAddFrete = () => {
     setForm((prev) => ({
       ...prev,
-      valorFretePorCidade: [...(prev.valorFretePorCidade ?? [])].concat({
+      fretesPorCidade: [...(prev.fretesPorCidade ?? [])].concat({
         cidade: "",
         valor: "",
       }),
@@ -171,7 +171,7 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
   const handleRemoveFrete = (index: number) => {
     setForm((prev) => ({
       ...prev,
-      valorFretePorCidade: (prev.valorFretePorCidade ?? []).filter(
+      fretesPorCidade: (prev.fretesPorCidade ?? []).filter(
         (_, i) => i !== index
       ),
     }));
@@ -183,10 +183,10 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
     value: string | number
   ) => {
     setForm((prev) => {
-      const updatedFretes = (prev.valorFretePorCidade ?? []).map((frete, i) =>
+      const updatedFretes = (prev.fretesPorCidade ?? []).map((frete, i) =>
         i === index ? { ...frete, [key]: value } : frete
       );
-      return { ...prev, valorFretePorCidade: updatedFretes };
+      return { ...prev, fretesPorCidade: updatedFretes };
     });
   };
 
@@ -310,9 +310,9 @@ const ClienteFormPopup: React.FC<ClienteFormPopupProps> = ({
             <FaPlus />
           </Button>
         </ContainerFretesAdd>
-        {form.valorFretePorCidade && form.valorFretePorCidade.length > 0 && (
+        {form.fretesPorCidade && form.fretesPorCidade.length > 0 && (
           <FreteListContainer>
-            {form.valorFretePorCidade.map((frete, index) => (
+            {form.fretesPorCidade.map((frete, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <FreteContainer key={index}>
                 <FlexContainer display="flex" iscolumn={true}>

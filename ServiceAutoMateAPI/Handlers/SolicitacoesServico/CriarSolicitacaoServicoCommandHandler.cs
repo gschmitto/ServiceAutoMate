@@ -29,7 +29,7 @@ namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
             var cliente = await _clienteRepository.GetByIdAsync(request.ClienteId)
                 ?? throw new KeyNotFoundException("Cliente não encontrado.");
 
-            var valorFrete = cliente.GetValorFretePorCidade(request.CidadeDestinatario, request.CalcularTotalNotas());
+            var valorFrete = cliente.GetFretesPorCidade(request.CidadeDestinatario, request.CalcularTotalNotas());
 
             var solicitacaoServico = new SolicitacaoServico
             {

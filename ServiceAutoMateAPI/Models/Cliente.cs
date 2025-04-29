@@ -6,15 +6,15 @@ namespace ServiceAutoMateAPI.Models
         public required string NomeEmpresa { get; set; }
         public required string Endereco { get; set; }
         public required string Cidade { get; set; }
-        public List<FretePorCidade>? ValorFretePorCidade { get; set; }
+        public List<FretePorCidade>? FretesPorCidade { get; set; }
         public decimal ValorMaximoNota { get; set; }
         public decimal PorcentagemCobranca { get; set; }
         public DateTime DataCriacao { get; set; }
         public DateTime? DataEdicao { get; set; }
 
-        public decimal GetValorFretePorCidade(string cidadeDestinatario, decimal totalNotas)
+        public decimal GetFretesPorCidade(string cidadeDestinatario, decimal totalNotas)
         {
-            var frete = (ValorFretePorCidade?
+            var frete = (FretesPorCidade?
                 .FirstOrDefault(f => f.Cidade.Equals(cidadeDestinatario, StringComparison.OrdinalIgnoreCase)))
                 ?? throw new InvalidOperationException($"Não há valor de frete cadastrado para a cidade de '{cidadeDestinatario}' para este cliente.");
             

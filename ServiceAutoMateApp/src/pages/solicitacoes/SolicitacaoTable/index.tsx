@@ -50,6 +50,7 @@ const SolicitacaoTable: React.FC<SolicitacaoTableProps> = ({
         ...form,
         quantidadeVolumes: Number(form.quantidadeVolumes) || 0,
         notasFiscais: form.notasFiscais.map((nf) => ({
+          ...nf,
           numeroNota: nf.numeroNota,
           valorNota: Number(nf.valorNota) || 0,
         })),

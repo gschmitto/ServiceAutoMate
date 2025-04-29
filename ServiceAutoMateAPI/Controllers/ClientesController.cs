@@ -72,7 +72,7 @@ namespace ServiceAutoMateAPI.Controllers
                 NomeEmpresa = dto.NomeEmpresa,
                 Endereco = dto.Endereco,
                 Cidade = dto.Cidade,
-                ValorFretePorCidade = dto.ValorFretePorCidade,
+                FretesPorCidade = dto.FretesPorCidade,
                 ValorMaximoNota = dto.ValorMaximoNota,
                 PorcentagemCobranca = dto.PorcentagemCobranca
             };

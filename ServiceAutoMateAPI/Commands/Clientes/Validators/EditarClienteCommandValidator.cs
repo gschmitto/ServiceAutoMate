@@ -24,7 +24,7 @@ namespace ServiceAutoMateAPI.Commands.Clientes.Validators
                 .NotEmpty().WithMessage("A cidade não pode ser vazia.")
                 .Length(3, 100).WithMessage("A cidade deve ter entre 3 e 100 caracteres.");
 
-            RuleForEach(command => command.ValorFretePorCidade)
+            RuleForEach(command => command.FretesPorCidade)
                 .SetValidator(new FretePorCidadeValidator());
 
             RuleFor(command => command.ValorMaximoNota)

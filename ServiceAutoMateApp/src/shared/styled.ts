@@ -51,7 +51,7 @@ export const PopupContent = styled.div<PopupContentProps>`
 export const Container = styled.div`
   padding: 30px;
   background-color: ${({ theme }) => theme.colors.background};
-  min-height: 100vh;
+  min-height: 89vh;
   font-family: "Roboto", sans-serif;
   color: ${({ theme }) => theme.colors.black};
 `;

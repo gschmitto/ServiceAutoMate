@@ -28,6 +28,9 @@ const Home: React.FC<HomeProps> = ({ title }) => {
           <ActionButton onClick={() => navigate("/solicitacoes")}>
             Solicitações de Serviço
           </ActionButton>
+          <ActionButton onClick={() => navigate("/monitoramento")}>
+            Monitoramento
+          </ActionButton>
         </ButtonContainer>
       </Content>
     </Container>

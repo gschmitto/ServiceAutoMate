@@ -12,12 +12,18 @@ namespace ServiceAutoMateAPI.Repository
         {
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync(cancellationToken);
+            foreach (var fretePorCidade in cliente.FretesPorCidade!)
+            {
+                _context.FretesPorCidade.Add(fretePorCidade);
+            }
             return cliente;
         }
 
         public async Task<IEnumerable<Cliente>> GetPaginationAsync(int page, int pageSize, string? nome = null)
         {
-            var query = _context.Clientes.AsQueryable();
+            var query = _context.Clientes
+                .Include(c => c.FretesPorCidade)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(nome))
             {
@@ -41,6 +47,7 @@ namespace ServiceAutoMateAPI.Repository
         {
             return await _context.Clientes
                 .AsNoTracking()
+                .Include(c => c.FretesPorCidade)
                 .FirstOrDefaultAsync(c =>
                     c.NomeEmpresa == nomeEmpresa &&
                     c.Endereco == endereco &&
@@ -51,14 +58,38 @@ namespace ServiceAutoMateAPI.Repository
         public async Task<Cliente?> GetByIdAsync(Guid id)
         {
             return await _context.Clientes
-                .Include(c => c.ValorFretePorCidade)
+                .Include(c => c.FretesPorCidade)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task UpdateAsync(Cliente cliente, CancellationToken cancellationToken)
         {
-            _context.Clientes.Update(cliente);
-            await _context.SaveChangesAsync(cancellationToken);
+            var clienteExistente = await _context.Clientes.FindAsync([cliente.Id], cancellationToken: cancellationToken);
+            var fretesPorCidadeCliente = cliente.FretesPorCidade ?? [];
+
+            if (clienteExistente != null)
+            {
+                var fretesPorCidadeExistente = await _context.FretesPorCidade.Where(f => f.ClienteId == cliente.Id).ToListAsync(cancellationToken: cancellationToken);
+                foreach (var fretePorCidade in fretesPorCidadeCliente)
+                {
+                    var fretePorCidadeExistente = fretesPorCidadeExistente.FirstOrDefault(f => f.Id == fretePorCidade.Id);
+                    if (fretePorCidadeExistente != null)
+                    {
+                        fretePorCidadeExistente.Cidade = fretePorCidade.Cidade;
+                        fretePorCidadeExistente.Valor = fretePorCidade.Valor;
+                    }
+                    else
+                    {
+                        _context.FretesPorCidade.Add(fretePorCidade);
+                    }
+                }
+
+                var fretesPorCidadeParaRemover = fretesPorCidadeExistente.Where(f => !fretesPorCidadeCliente.Any(c => c.Id == f.Id));
+                _context.FretesPorCidade.RemoveRange(fretesPorCidadeParaRemover);
+
+                _context.Clientes.Update(cliente);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
         }
 
         public async Task DeleteAsync(Guid id)
@@ -66,6 +97,8 @@ namespace ServiceAutoMateAPI.Repository
             var cliente = await _context.Clientes.FindAsync(id);
             if (cliente != null)
             {
+                var fretesPorCidade = await _context.FretesPorCidade.Where(f => f.ClienteId == id).ToListAsync();
+                _context.FretesPorCidade.RemoveRange(fretesPorCidade);
                 _context.Clientes.Remove(cliente);
                 await _context.SaveChangesAsync();
             }

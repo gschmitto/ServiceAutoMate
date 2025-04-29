@@ -7,5 +7,5 @@ export interface Cliente {
   cidade: string;
   valorMaximoNota: number;
   porcentagemCobranca: number;
-  valorFretePorCidade?: FretePorCidade[] | null;
+  fretesPorCidade?: FretePorCidade[] | null;
 }

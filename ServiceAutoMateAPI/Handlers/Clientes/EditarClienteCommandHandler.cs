@@ -28,7 +28,7 @@ namespace ServiceAutoMateAPI.Handlers.Clientes
             clienteExistente.NomeEmpresa = request.NomeEmpresa;
             clienteExistente.Endereco = request.Endereco;
             clienteExistente.Cidade = request.Cidade;
-            clienteExistente.ValorFretePorCidade = request.ValorFretePorCidade;
+            clienteExistente.FretesPorCidade = request.FretesPorCidade;
             clienteExistente.ValorMaximoNota = request.ValorMaximoNota;
             clienteExistente.PorcentagemCobranca = request.PorcentagemCobranca;
             clienteExistente.DataEdicao = DateTime.UtcNow;

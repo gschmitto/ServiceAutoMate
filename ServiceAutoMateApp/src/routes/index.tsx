@@ -4,6 +4,7 @@ import Home from "../pages/home";
 import Clientes from "../pages/clientes";
 import Solicitacoes from "../pages/solicitacoes";
 import Menu from "../components/Menu";
+import Monitoramento from "../pages/monitoramento";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const AppRoutes: React.FC = () => {
           path="/solicitacoes"
           element={<Solicitacoes title="Solicitações de Serviço" />}
         />
+        <Route path="/monitoramento" element={<Monitoramento title="Monitoramento" />} />
       </Routes>
     </Router>
   );

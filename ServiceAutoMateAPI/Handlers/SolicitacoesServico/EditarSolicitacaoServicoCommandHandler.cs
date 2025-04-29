@@ -38,7 +38,7 @@ namespace ServiceAutoMateAPI.Handlers.SolicitacoesServico
 
             if (cliente != null)
             {
-                solicitacaoExistente.ValorFrete = cliente.GetValorFretePorCidade(request.CidadeDestinatario, request.CalcularTotalNotas());
+                solicitacaoExistente.ValorFrete = cliente.GetFretesPorCidade(request.CidadeDestinatario, request.CalcularTotalNotas());
             }
 
             await _solicitacaoServicoRepository.UpdateAsync(solicitacaoExistente, cancellationToken);

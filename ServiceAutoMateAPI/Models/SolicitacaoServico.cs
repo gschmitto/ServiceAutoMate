@@ -11,5 +11,10 @@ namespace ServiceAutoMateAPI.Models
         public List<DadosNotaFiscal> NotasFiscais { get; set; } = [];
         public DateTime DataCriacao { get; set; }
         public DateTime? DataEdicao { get; set; }
+
+        public void AdicionarNotaFiscal(DadosNotaFiscal notaFiscal)
+        {
+            NotasFiscais.Add(notaFiscal);
+        }
     }
 }

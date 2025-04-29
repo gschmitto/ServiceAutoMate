@@ -26,6 +26,12 @@ const Menu: React.FC = () => {
         >
           Solicitação de Serviços
         </StyledLink>
+        <StyledLink
+          to="/monitoramento"
+          className={isActive("/monitoramento") ? "active" : ""}
+        >
+          Monitoramento
+        </StyledLink>
       </NavLinks>
     </MenuContainer>
   );

@@ -8,7 +8,7 @@ namespace ServiceAutoMateAPI.DTOs
         public required string NomeEmpresa { get; set; }
         public required string Endereco { get; set; }
         public required string Cidade { get; set; }
-        public List<FretePorCidade>? ValorFretePorCidade { get; set; }
+        public List<FretePorCidade>? FretesPorCidade { get; set; }
         public decimal ValorMaximoNota { get; set; }
         public decimal PorcentagemCobranca { get; set; }
     }

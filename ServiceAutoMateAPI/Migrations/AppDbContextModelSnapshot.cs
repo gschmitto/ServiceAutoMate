@@ -149,7 +149,7 @@ namespace ServiceAutoMateAPI.Migrations
             modelBuilder.Entity("ServiceAutoMateAPI.Models.FretePorCidade", b =>
                 {
                     b.HasOne("ServiceAutoMateAPI.Models.Cliente", null)
-                        .WithMany("ValorFretePorCidade")
+                        .WithMany("FretesPorCidade")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -157,7 +157,7 @@ namespace ServiceAutoMateAPI.Migrations
 
             modelBuilder.Entity("ServiceAutoMateAPI.Models.Cliente", b =>
                 {
-                    b.Navigation("ValorFretePorCidade");
+                    b.Navigation("FretesPorCidade");
                 });
 
             modelBuilder.Entity("ServiceAutoMateAPI.Models.SolicitacaoServico", b =>

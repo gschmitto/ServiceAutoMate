@@ -54,7 +54,7 @@ const Clientes: React.FC<ClientesProps> = ({ title }) => {
         ...form,
         valorMaximoNota: Number(form.valorMaximoNota) || 0,
         porcentagemCobranca: Number(form.porcentagemCobranca) || 0,
-        valorFretePorCidade: form.valorFretePorCidade?.map((frete) => ({
+        fretesPorCidade: form.fretesPorCidade?.map((frete) => ({
           cidade: frete.cidade,
           valor: Number(frete.valor) || 0,
         })),

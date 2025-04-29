@@ -45,7 +45,7 @@ const ClienteTable: React.FC<ClienteTableProps> = ({
         ...form,
         valorMaximoNota: form.valorMaximoNota || 0,
         porcentagemCobranca: Number(form.porcentagemCobranca) || 0,
-        valorFretePorCidade: form.valorFretePorCidade?.map((frete) => ({
+        fretesPorCidade: form.fretesPorCidade?.map((frete) => ({
           cidade: frete.cidade,
           valor: Number(frete.valor) || 0,
         })),
@@ -94,8 +94,8 @@ const ClienteTable: React.FC<ClienteTableProps> = ({
               <Td>{cliente.nomeEmpresa}</Td>
               <Td>{cliente.endereco}</Td>
               <Td>{cliente.cidade}</Td>
-              <Td>R$ {cliente.valorMaximoNota}</Td>
-              <Td>{cliente.porcentagemCobranca}%</Td>
+              <Td>{cliente.valorMaximoNota.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Td>
+              <Td>{cliente.porcentagemCobranca.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 })}%</Td>
               <Td>
                 <AcaoConteiner>
                   <Button onClick={() => handleEdit(cliente.id)}>
