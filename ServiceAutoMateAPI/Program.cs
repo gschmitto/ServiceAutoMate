@@ -30,6 +30,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 // Registrar o repositório
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
 builder.Services.AddScoped<ISolicitacaoServicoRepository, SolicitacaoServicoRepository>();
+builder.Services.AddScoped<IPrevisaoMonitoramentoRepository, PrevisaoMonitoramentoRepository>();
 
 // Registrar o FluentValidation
 builder.Services.AddScoped<IValidator<CriarClienteCommand>, CriarClienteCommandValidator>();

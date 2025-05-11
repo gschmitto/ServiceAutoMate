@@ -13,11 +13,11 @@ namespace ServiceAutoMateAPI.Controllers
         private readonly IMediator _mediator = mediator;
 
         [HttpGet("previsao")]
-        [ProducesResponseType(typeof(PrevisaoResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<PrevisaoResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ObterPrevisao()
+        public async Task<IActionResult> ObterPrevisao([FromQuery] int quantidadeMeses = 1)
         {
-            var query = new ObterPrevisaoFaturamentoQuery();
+            var query = new ObterPrevisaoFaturamentoQuery { QuantidadeMeses = quantidadeMeses };
             var previsao = await _mediator.Send(query);
             return Ok(previsao);
         }

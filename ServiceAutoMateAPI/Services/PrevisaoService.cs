@@ -13,7 +13,7 @@ namespace ServiceAutoMateAPI.Services
             _mlContext = new MLContext();
         }
 
-        public PrevisaoResponse CalcularPrevisao(List<PrevisaoFaturamentoDto> dadosHistoricos)
+        public List<PrevisaoResponse> CalcularPrevisao(List<PrevisaoFaturamentoDto> dadosHistoricos, int quantidadeMeses)
         {
             if (dadosHistoricos.Count < 3)
                 throw new Exception("Não há dados suficientes para previsão.");
@@ -36,26 +36,37 @@ namespace ServiceAutoMateAPI.Services
 
             // Treina o modelo
             var model = pipeline.Fit(trainingData);
-
-            // Descobre próximo mês/ano
-            var ultimo = dadosHistoricos.Last();
-            var proximoMes = ultimo.Mes == 12 ? 1 : ultimo.Mes + 1;
-            var proximoAno = ultimo.Mes == 12 ? ultimo.Ano + 1 : ultimo.Ano;
-
             var predictionEngine = _mlContext.Model.CreatePredictionEngine<FaturamentoData, FaturamentoPrediction>(model);
 
-            var prediction = predictionEngine.Predict(new FaturamentoData
+            var previsoes = new List<PrevisaoResponse>();
+            var ultimo = dadosHistoricos.Last();
+            int mes = ultimo.Mes;
+            int ano = ultimo.Ano;
+            
+            for (int i = 0; i < quantidadeMeses; i++)
             {
-                Mes = proximoMes,
-                Ano = proximoAno
-            });
+                mes++;
+                if (mes > 12)
+                {
+                    mes = 1;
+                    ano++;
+                }
 
-            return new PrevisaoResponse
-            {
-                Ano = proximoAno,
-                Mes = proximoMes,
-                PrevisaoFrete = (float)Math.Round(prediction.PrevisaoFrete, 2)
-            };
+                var prediction = predictionEngine.Predict(new FaturamentoData
+                {
+                    Mes = mes,
+                    Ano = ano
+                });
+
+                previsoes.Add(new PrevisaoResponse
+                {
+                    Mes = mes,
+                    Ano = ano,
+                    PrevisaoFrete = (float)Math.Round(prediction.PrevisaoFrete, 2)
+                });
+            }
+
+            return previsoes;
         }
     }
 }
