@@ -72,6 +72,9 @@ namespace ServiceAutoMateAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(SucessoResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErroResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ExcluirSolicitacao(Guid id)
         {
             await _mediator.Send(new ExcluirSolicitacaoServicoCommand { Id = id });

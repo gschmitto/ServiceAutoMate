@@ -10,6 +10,7 @@ using ServiceAutoMateAPI.Commands.Clientes.Validators;
 using ServiceAutoMateAPI.Commands.SolicitacoesServico;
 using ServiceAutoMateAPI.Commands.SolicitacoesServico.Validators;
 using ServiceAutoMateAPI.Data;
+using ServiceAutoMateAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseWindowsService();
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IValidator<CriarSolicitacaoServicoCommand>, CriarSoli
 builder.Services.AddScoped<IValidator<EditarSolicitacaoServicoCommand>, EditarSolicitacaoServicoCommandValidator>();
 builder.Services.AddScoped<IValidator<DadosNotaFiscal>, DadosNotaFiscalValidator>();
 
+builder.Services.AddScoped<PrevisaoService>();
+
 // Adicionar serviços ao contêiner
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -47,6 +50,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// using (var scope = app.Services.CreateScope())
+// {
+//     var services = scope.ServiceProvider;
+//     var context = services.GetRequiredService<AppDbContext>();
+//     var seedData = new SeedData();
+//     seedData.SeedSolicitacoesAsync(context).Wait();
+// }
 
 // Configurar o pipeline HTTP
 if (app.Environment.IsDevelopment())

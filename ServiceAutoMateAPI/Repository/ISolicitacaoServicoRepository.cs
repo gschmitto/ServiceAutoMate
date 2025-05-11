@@ -1,3 +1,4 @@
+using ServiceAutoMateAPI.DTOs;
 using ServiceAutoMateAPI.Models;
 
 namespace ServiceAutoMateAPI.Repository
@@ -19,5 +20,6 @@ namespace ServiceAutoMateAPI.Repository
         Task<SolicitacaoServico> GetByIdAsync(Guid id);
         Task UpdateAsync(SolicitacaoServico solicitacao, CancellationToken cancellationToken);
         Task DeleteAsync(Guid id);
+        Task<List<PrevisaoFaturamentoDto>> ObterDadosAgrupadosMensalAsync(CancellationToken cancellationToken);
     }
 }

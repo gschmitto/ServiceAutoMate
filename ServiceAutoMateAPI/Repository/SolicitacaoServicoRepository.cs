@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ServiceAutoMateAPI.Data;
+using ServiceAutoMateAPI.DTOs;
 using ServiceAutoMateAPI.Models;
 
 namespace ServiceAutoMateAPI.Repository
@@ -106,6 +107,20 @@ namespace ServiceAutoMateAPI.Repository
                 _context.Solicitacoes.Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<List<PrevisaoFaturamentoDto>> ObterDadosAgrupadosMensalAsync(CancellationToken cancellationToken)
+        {
+            return await _context.Solicitacoes
+                .GroupBy(s => new { s.DataCriacao.Year, s.DataCriacao.Month })
+                .Select(g => new PrevisaoFaturamentoDto
+                {
+                    Ano = g.Key.Year,
+                    Mes = g.Key.Month,
+                    TotalFrete = g.Sum(s => s.ValorFrete)
+                })
+                .OrderBy(x => x.Ano).ThenBy(x => x.Mes)
+                .ToListAsync(cancellationToken);
         }
     }
 }
