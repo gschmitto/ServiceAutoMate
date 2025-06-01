@@ -20,7 +20,7 @@ namespace ServiceAutoMateAPI.Handlers.Monitoramento
         public async Task<List<PrevisaoResponse>> Handle(ObterPrevisaoFaturamentoQuery request, CancellationToken cancellationToken)
         {
             var dadosAgrupados = await _repository.ObterDadosAgrupadosMensalAsync(cancellationToken);
-            var previsoes = _previsaoService.CalcularPrevisao(dadosAgrupados, request.QuantidadeMeses);
+            var previsoes = _previsaoService.CalcularPrevisaoComModeloSalvo(dadosAgrupados, request.QuantidadeMeses, "MLModel/ModeloPrevisaoFrete.zip");
 
             var entidades = previsoes.Select(p => new PrevisaoMonitoramento
             {

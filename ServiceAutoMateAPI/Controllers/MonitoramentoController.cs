@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ServiceAutoMateAPI.Commands.Monitoramento;
 using ServiceAutoMateAPI.Queries;
 using ServiceAutoMateAPI.Responses;
 using ServiceAutoMateAPI.Responses.Errors;
@@ -20,6 +21,13 @@ namespace ServiceAutoMateAPI.Controllers
             var query = new ObterPrevisaoFaturamentoQuery { QuantidadeMeses = quantidadeMeses };
             var previsao = await _mediator.Send(query);
             return Ok(previsao);
+        }
+
+        [HttpPost("treinar-modelo")]
+        public async Task<IActionResult> TreinarModelo(CancellationToken cancellationToken)
+        {
+            await _mediator.Send(new TreinarModeloPrevisaoCommand(), cancellationToken);
+            return Ok("Modelo treinado com sucesso.");
         }
     }
 }
