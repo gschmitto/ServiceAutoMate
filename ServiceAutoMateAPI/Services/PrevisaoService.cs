@@ -113,7 +113,7 @@ namespace ServiceAutoMateAPI.Services
             return previsoes;
         }
 
-        public void TreinarEMemorizarModelo(List<PrevisaoFaturamentoDto> dadosHistoricos, string caminhoModelo)
+        public ResultadoAvaliacaoML TreinarAvaliarEMemorizarModelo(List<PrevisaoFaturamentoDto> dadosHistoricos, string caminhoModelo)
         {
             var data = dadosHistoricos
                 .Select(d => new FaturamentoData
@@ -123,16 +123,31 @@ namespace ServiceAutoMateAPI.Services
                     TotalFrete = (float)d.TotalFrete
                 }).ToList();
 
-            var trainingData = _mlContext.Data.LoadFromEnumerable(data);
+            var fullData = _mlContext.Data.LoadFromEnumerable(data);
+
+            var trainTestSplit = _mlContext.Data.TrainTestSplit(fullData, testFraction: 0.01);
+            var trainingData = trainTestSplit.TrainSet;
 
             var pipeline = _mlContext.Transforms
                 .Concatenate("Features", nameof(FaturamentoData.Mes), nameof(FaturamentoData.Ano))
-                .Append(_mlContext.Regression.Trainers.Sdca(labelColumnName: "TotalFrete", maximumNumberOfIterations: 100));
+                .Append(_mlContext.Regression.Trainers.Sdca(
+                    labelColumnName: "TotalFrete", maximumNumberOfIterations: 100));
 
-            var model = pipeline.Fit(trainingData);
+            var model = pipeline.Fit(fullData);
+
+            var predictions = model.Transform(fullData);
+            var metrics = _mlContext.Regression.Evaluate(predictions, labelColumnName: "TotalFrete");
 
             // Salva o modelo treinado
             _mlContext.Model.Save(model, trainingData.Schema, caminhoModelo);
+
+            // Retorna os resultados
+            return new ResultadoAvaliacaoML
+            {
+                MeanAbsoluteError = metrics.MeanAbsoluteError,
+                RootMeanSquaredError = metrics.RootMeanSquaredError,
+                RSquared = metrics.RSquared
+            };
         }
     }
 }

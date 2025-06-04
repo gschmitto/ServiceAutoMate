@@ -44,7 +44,7 @@ namespace ServiceAutoMateAPI.Repository
                     CidadeDestinatario = cidadeSelecionada.Cidade,
                     QuantidadeVolumes = random.Next(1, 5),
                     ValorFrete = cidadeSelecionada.Valor,
-                    DataCriacao = DateTime.SpecifyKind(new DateTime(2025, 5, random.Next(1, 32)), DateTimeKind.Utc)
+                    DataCriacao = DateTime.SpecifyKind(new DateTime(2024, 7, random.Next(1, 31)), DateTimeKind.Utc)
                 };
 
                 context.Solicitacoes.Add(solicitacao);

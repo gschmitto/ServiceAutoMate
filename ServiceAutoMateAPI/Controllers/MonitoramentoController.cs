@@ -26,8 +26,8 @@ namespace ServiceAutoMateAPI.Controllers
         [HttpPost("treinar-modelo")]
         public async Task<IActionResult> TreinarModelo(CancellationToken cancellationToken)
         {
-            await _mediator.Send(new TreinarModeloPrevisaoCommand(), cancellationToken);
-            return Ok("Modelo treinado com sucesso.");
+            var resultado = await _mediator.Send(new TreinarModeloPrevisaoCommand(), cancellationToken);
+            return Ok(resultado);
         }
     }
 }
